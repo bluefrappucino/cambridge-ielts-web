@@ -1,0 +1,12 @@
+# Large archives (>100MB exceeds GitHub push limit)
+*.rar
+*.zip
+*general_training*.pdf
+
+# OS & Temp
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+node_modules/
+.vscode/
