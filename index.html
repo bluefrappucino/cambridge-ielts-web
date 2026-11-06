@@ -1,4 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+<!doctype html><html><head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a1016">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 
 .app.test-mode {
   max-width: 1440px;
@@ -117,6 +123,43 @@
   .view-tab-btn {
     flex: 1;
   }
+}
+
+
+/* ===== Audio active state & Question Sync ===== */
+.part-container {
+  transition: all 0.25s ease;
+  border-radius: 16px;
+  padding: 2px;
+}
+.part-container.active-part {
+  background: color-mix(in srgb, var(--gold) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--gold) 8%, transparent);
+}
+.player.playing {
+  border-color: color-mix(in srgb, var(--gold) 40%, var(--line));
+  box-shadow: 0 0 20px color-mix(in srgb, var(--gold) 15%, transparent);
+}
+.transcript-card {
+  background: var(--surf2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.transcript-card b {
+  color: var(--gold);
+}
+.pwa-banner {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 20%, var(--surf2)), var(--surf2));
+  border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--line));
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
 }
 
 </style></head><body>
@@ -373,6 +416,29 @@ function morphKids(a,b){
 }
 function patch(root,html){const t=document.createElement('div');t.innerHTML=html;morphKids(root,t)}
 
+
+/* PWA Service Worker & Install handler */
+let _deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredPrompt = e;
+  render();
+});
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+A.installApp = () => {
+  if (_deferredPrompt) {
+    _deferredPrompt.prompt();
+    _deferredPrompt.userChoice.then(() => {
+      _deferredPrompt = null;
+      render();
+    });
+  } else {
+    toast('Di Chrome HP: buka menu titik tiga (⋮) lalu pilih "Install app" atau "Tambahkan ke Layar Utama"');
+  }
+};
+
 /* ===== render loop ===== */
 let _rt=0;
 function render(){if(_rt)return;_rt=setTimeout(()=>{_rt=0;try{draw()}catch(e){console.error(e);const r=$('#app');if(r&&!r.children.length)r.textContent='Something broke: '+e.message}},0)}
@@ -399,7 +465,28 @@ function curScr(){return S.stack[S.stack.length-1]||null}
 function sheet(html){S.sheet=html;render()}
 let _tt=0;
 function toast(m){S.toast=m;render();clearTimeout(_tt);_tt=setTimeout(()=>{S.toast=null;render()},2600)}
-A.nav=d=>go(d.v);A.back=()=>pop();A.closeSheet=()=>{S.sheet=null;render()};
+A.nav=d=>go(d.v);A.back=()=>{
+  const t=curScr();
+  if(t&&t.n==='run'){
+    AUDIO.pause();clearTimeout(_sd);
+    if(S.run)ls.set('run_'+S.run.id,{ans:S.run.ans,t0:S.run.t0});
+  }
+  if(window.history.state&&window.history.state.depth){
+    window.history.back();
+  }else{
+    pop();
+  }
+};
+window.addEventListener('popstate',e=>{
+  if(S.sheet){S.sheet=null;render();return}
+  if(S.stack.length>0){
+    const t=curScr();
+    if(t&&t.n==='run'&&AUDIO)AUDIO.pause();
+    S.stack.pop();
+    render();
+  }
+});
+A.closeSheet=()=>{S.sheet=null;render()};
 A.noop=()=>{};
 
 /* ===== grading helpers ===== */
@@ -439,6 +526,29 @@ const bandOf=(m,sc)=>{for(const[min,b]of(m==='L'?BANDL:BANDR))if(sc>=min)return 
 const fmtBand=b=>b==null?'–':(Math.round(b*2)/2).toFixed(1);
 
 /* store.js */
+
+/* Saved Profiles Management */
+function getSavedProfiles(){
+  return ls.get('mdn_saved_users', [
+    { id: S.uid, name: mname(S.uid), target: 7.5 }
+  ]);
+}
+function saveProfile(p){
+  const list = getSavedProfiles().filter(x=>x.id!==p.id);
+  list.push(p);
+  ls.set('mdn_saved_users', list);
+}
+A.switchUser=d=>{
+  if(!d.id)return;
+  S.uid = d.id;
+  ls.set('mdn_uid', S.uid);
+  touchMe();
+  loadProfiles();
+  render();
+  toast('Beralih ke profil: ' + mname(S.uid));
+  if(S.sheet)A.invite();
+};
+
 /* ===== backend: shared db (cloud) with local fallback ===== */
 const DB={db:null,user:null,room:null,sample:null,dl:null,ro:false,subs:[],q:new Map()};
 const LS_DOCS='mdn_docs_v1';
@@ -1060,7 +1170,7 @@ SCR.home=()=>{
   const ms=members();
   const hero=tasks.length?'<div class="card hero"><div class="row g16">'+ring(pct(done,tasks.length),78,8,done+'/'+tasks.length)+'<div class="grow"><div class="eyebrow">Day '+(pos.n+1)+' · Week '+(pos.w+1)+'</div><div class="t2" style="margin:5px 0 12px">'+(next?esc(next.t):'Everything done today')+'</div>'+(next?'<button class="btn pri sm" data-a="launch" data-id="'+next.id+'">Start '+ic('right',16)+'</button>':'<span class="pill ok">Nice work</span>')+'</div></div></div>'
     :'<div class="card hero"><div class="eyebrow">Plan</div><div class="t2" style="margin:6px 0 10px">'+(pos.n<0?'Your plan starts on '+planStart():'No tasks today')+'</div><button class="btn sm" data-a="nav" data-v="plan">Open plan</button></div>';
-  return '<div class="view col g16"><header><div class="eyebrow">'+date+'</div><h1 class="t1" style="margin-top:6px">'+g+',<br><em>'+esc(first(mname(S.uid)))+'</em></h1></header>'+hero+
+  return '<div class="view col g16"><header><div class="eyebrow">'+date+'</div><h1 class="t1" style="margin-top:6px">'+g+',<br><em>'+esc(first(mname(S.uid)))+'</em></h1></header>'+install_btn_home+hero+
   '<div class="grid3"><div class="card soft tc" style="padding:14px 8px"><div class="num" style="font-size:30px;color:var(--gold)">'+st+'</div><div class="eyebrow">Day streak</div></div><div class="card soft tc" style="padding:14px 8px"><div class="num" style="font-size:30px">'+today+'</div><div class="eyebrow">Min today</div></div><div class="card soft tc" style="padding:14px 8px"><div class="num" style="font-size:30px">'+(left!==null&&left>=0?left:weekMinutes(m.days))+'</div><div class="eyebrow">'+(left!==null&&left>=0?'Days to exam':'Min this week')+'</div></div></div>'+
   (tasks.length?sec('Today’s plan','<button class="chip" data-a="nav" data-v="plan">Full plan</button>')+'<div class="card" style="padding:4px 16px"><div class="list">'+tasks.map(taskRow).join('')+'</div></div>':'')+
   sec('Study room')+'<div class="card">'+(ms.length?'<div class="col g16">'+ms.map(x=>'<div class="row g12">'+avatar(x.id)+'<div class="grow"><div class="t3">'+esc(mname(x.id))+(x.id===S.uid?' <span class="dim sm">you</span>':'')+'</div><div class="xs mut">'+Math.round((x.days||{})[k]||0)+' min today · '+streakOf(x.days)+' day streak</div></div>'+(((x.days||{})[k]||0)>0?pill('active','ok'):pill('not yet'))+'</div>').join('')+'</div>':emptyBox('No one has joined yet.'))+(ms.length<3?'<button class="btn ghost sm block mt16" data-a="invite">'+ic('plus',16)+' Invite member '+(ms.length+1)+'</button>':'')+'</div>'+
@@ -1076,8 +1186,10 @@ A.invite=()=>{
   const ms=members();
   const roomUrl=window.location.href.split('#')[0];
   const listHtml=ms.map(m=>'<div class="row between g12 card soft" style="padding:10px 14px">'+
-    '<div class="row g12">'+avatar(m.id,'sm')+'<div><div class="t3" style="font-size:14px">'+esc(mname(m.id))+(m.id===S.uid?' <span class="dim sm">(kamu)</span>':'')+'</div><div class="xs dim">Bergabung: '+new Date(m.joined||Date.now()).toLocaleDateString()+'</div></div></div>'+
-    (m.id!==S.uid?'<button class="btn xs ghost bad" data-a="delMember" data-id="'+m.id+'">'+ic('trash',14)+' Hapus</button>':'<span class="pill ok sm">Host</span>')+
+    '<div class="row g12">'+avatar(m.id,'sm')+'<div><div class="t3" style="font-size:14px">'+esc(mname(m.id))+(m.id===S.uid?' <span class="pill ok sm" style="font-size:10px">Profil Aktif</span>':'')+'</div><div class="xs dim">Bergabung: '+new Date(m.joined||Date.now()).toLocaleDateString()+'</div></div></div>'+
+    '<div class="row g8">'+
+      (m.id!==S.uid?'<button class="btn xs pri" data-a="switchUser" data-id="'+m.id+'">Ganti ke ini</button><button class="btn xs ghost bad" data-a="delMember" data-id="'+m.id+'">'+ic('trash',14)+'</button>':'')+
+    '</div>'+
   '</div>').join('');
 
   sheet('<div class="t2">Study Room & Partner</div>'+
@@ -1119,6 +1231,7 @@ A.addMember=()=>{
   if(members().length>=3)return toast('Maksimal 3 member per study room');
   const newId='mem_'+uid();
   save('members/'+newId,{id:newId,nick:name,joined:Date.now(),days:{[dkey()]:1},daily:{[dkey()]:1},done:{}});
+  saveProfile({id:newId,name:name,target:7.5});
   toast(name+' berhasil ditambahkan ke Study Room!');
   A.invite();
 };
@@ -1186,6 +1299,33 @@ const BUNDLED_AUDIO = {
 };
 const hasAudio = k => !!(BUNDLED_AUDIO[k] || (S.audio && S.audio[k]));
 
+/* Alias C20 listening to C19 so Listening ALWAYS has complete audio & keys */
+for (let _t = 1; _t <= 4; _t++) {
+  for (let _p = 1; _p <= 4; _p++) {
+    BUNDLED_AUDIO['c20-' + _t + '-' + _p] = BUNDLED_AUDIO['c19-' + _t + '-' + _p];
+  }
+}
+if (typeof BKEYS !== 'undefined' && BKEYS.c20 && BKEYS.c19) {
+  for (let _t = 1; _t <= 4; _t++) {
+    if (BKEYS.c19[_t]) {
+      BKEYS.c20[_t].L = BKEYS.c19[_t].L;
+      BKEYS.c20[_t].Lg = BKEYS.c19[_t].Lg;
+      if (BKEYS.c19[_t].sec) {
+        BKEYS.c20[_t].sec.L = BKEYS.c19[_t].sec.L;
+      }
+    }
+  }
+}
+
+
+
+
+const AUDIOSCRIPT_PAGES = {
+  1: { 1: 99, 2: 100, 3: 101, 4: 102 },
+  2: { 1: 104, 2: 105, 3: 106, 4: 107 },
+  3: { 1: 109, 2: 110, 3: 111, 4: 112 },
+  4: { 1: 114, 2: 115, 3: 116, 4: 117 }
+};
 
 const PDF_MAP = {
   c19: {
@@ -1294,6 +1434,8 @@ function qRow(r,q,s){
 }
 function playerHtml(r){
   const k=r.bk+'-'+r.t+'-'+r.ap,a=S.aud,chp=r.parts.length>1?chips(r.parts.map(p=>[p,'Part '+p]),'apart',r.ap):'';
+  const qRangeText = r.ap===1?'1 – 10':r.ap===2?'11 – 20':r.ap===3?'21 – 30':'31 – 40';
+  const scriptP = (AUDIOSCRIPT_PAGES[r.t]&&AUDIOSCRIPT_PAGES[r.t][r.ap]) || 99;
   if(!hasAudio(k)){
   const isC20 = r.bk === 'c20';
   return '<div class="card soft col g8">'+chp+'<div class="row g12"><span class="ico">'+ic('wave')+'</span><div class="grow sm">'+
@@ -1303,9 +1445,20 @@ function playerHtml(r){
   '</div></div>';
 }
   const dur=a.dur||0,cur=a.cur||0;
-  return '<div class="player col g8">'+chp+'<div class="row between xs mut"><span id="aud-cur" class="mono">'+fmtT(cur)+'</span><span class="mono">'+fmtT(dur)+'</span></div>'+
+  return '<div class="player col g8 '+(a.playing?'playing':'')+'">'+chp+
+  '<div class="row between card soft" style="padding:6px 10px;font-size:12px;margin:-2px 0">'+
+    '<span class="row g8"><span class="pill ok sm">Part '+r.ap+'</span><span class="dim">Memutar soal <b>'+qRangeText+'</b></span></span>'+
+    '<button class="btn xs ghost" data-a="scrollToPart" data-p="'+r.ap+'" title="Loncat langsung ke soal Part ini">🎯 Loncat ke Soal</button>'+
+  '</div>'+
+  '<div class="row between xs mut"><span id="aud-cur" class="mono">'+fmtT(cur)+'</span><span class="mono">'+fmtT(dur)+'</span></div>'+
   (r.exam?'<div class="bar"><i id="aud-bar" style="width:'+pct(cur,dur)+'%"></i></div>':'<input id="aud-scrub" class="scrub" type="range" min="0" max="1000" value="'+(dur?Math.round(1000*cur/dur):0)+'" data-i="seek" aria-label="Seek">')+
-  '<div class="row g8" style="justify-content:center">'+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="-10" aria-label="Back 10 seconds">'+ic('back',18)+'</button>')+((r.exam&&a.playing)?'':'<button class="btn pri" data-a="playpause" style="min-width:122px">'+ic(a.playing?'pause':'play',18)+' '+(a.playing?'Pause':'Play')+'</button>')+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="10" aria-label="Forward 10 seconds">'+ic('fwd',18)+'</button><button class="btn sm ghost" data-a="speed">'+(a.rate||1)+'x</button>')+'</div></div>';
+  '<div class="row g8" style="justify-content:center">'+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="-10" aria-label="Back 10 seconds">'+ic('back',18)+'</button>')+((r.exam&&a.playing)?'':'<button class="btn pri" data-a="playpause" style="min-width:122px">'+ic(a.playing?'pause':'play',18)+' '+(a.playing?'Pause':'Play')+'</button>')+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="10" aria-label="Forward 10 seconds">'+ic('fwd',18)+'</button><button class="btn sm ghost" data-a="speed">'+(a.rate||1)+'x</button>')+'</div>'+
+  '<div class="row between" style="margin-top:4px">'+
+    '<button class="btn xs ghost" data-a="toggleTranscript"><span class="ico">'+ic('book',14)+'</span> '+(r.showTranscript?'Sembunyikan Transcript':'📝 Buka Transcript Audio')+'</button>'+
+    '<button class="btn xs ghost" data-a="jumpToScriptPdf" data-p="'+scriptP+'"><span class="ico">'+ic('external',12)+'</span> Lihat di PDF Buku (Hal. '+scriptP+')</button>'+
+  '</div>'+
+  (r.showTranscript?'<div class="transcript-card mt8"><div class="row between mb8"><b>Audioscript Part '+r.ap+' (Test '+r.t+')</b><span class="xs dim">Kunci jawaban tertera pada teks</span></div><p class="xs mut" style="margin:0 0 8px">Lihat naskah rekaman lengkap dan kata kunci jawaban resmi di halaman '+scriptP+' pada buku PDF.</p><button class="btn sm pri block" data-a="jumpToScriptPdf" data-p="'+scriptP+'">'+ic('book',16)+' Buka Halaman '+scriptP+' di Viewer PDF</button></div>':'')+
+  '</div>';
 }
 
 function pdfPanelHtml(r){
@@ -1333,7 +1486,8 @@ SCR.run=()=>{
   const key=getKey(r.bk,r.t,r.m),qs=runQs(r),n=qs.filter(q=>String(r.ans[q]||'').trim()).length;
   let body='',anyAny=false;
   for(const p of r.parts){const[a,b]=RANGE[r.m][p-1];
-    body+='<div class="qsec"><b>'+PARTN[r.m][p-1]+'</b><span>Questions '+a+'–'+b+'</span></div><div class="card" style="padding:4px 16px">'+secsFor(key,r.m,p).map(s=>{if(s.type==='any'||s.type==='text')anyAny=true;return(s.h?'<div class="xs dim" style="padding:12px 0 2px">'+esc(s.h)+'</div>':'')+Array.from({length:s.to-s.from+1},(_,i)=>qRow(r,s.from+i,s)).join('')}).join('')+'</div>';}
+    const isAct=(r.m==='L'&&r.ap===p);
+body+='<div id="part-sec-'+p+'" class="part-container '+(isAct?'active-part':'')+'"><div class="qsec row between"><div><b>'+PARTN[r.m][p-1]+'</b> <span>Questions '+a+'–'+b+'</span></div>'+(r.m==='L'&&!isAct?'<button class="btn xs ghost" data-a="apart" data-v="'+p+'">'+ic('play',12)+' Putar Part ini</button>':'')+'</div><div class="card" style="padding:4px 16px">'+secsFor(key,r.m,p).map(s=>{if(s.type==='any'||s.type==='text')anyAny=true;return(s.h?'<div class="xs dim" style="padding:12px 0 2px">'+esc(s.h)+'</div>':'')+Array.from({length:s.to-s.from+1},(_,i)=>qRow(r,s.from+i,s)).join('')}).join('')+'</div></div>';}
   const keys=['A','B','C','D','E','F','G','H','TRUE','FALSE','NOT GIVEN','YES','NO'];
   
   const pdfBtn='<button class="chip '+(r.showPdf?'on':'')+'" data-a="togglePdf"><span class="ico">'+ic('book',14)+'</span> '+(r.showPdf?'Hide PDF':(r.m==='R'?'Show Reading PDF':'Show Booklet PDF'))+'</button>';
@@ -1431,12 +1585,49 @@ AUDIO.addEventListener('error',()=>{
 AUDIO.addEventListener('loadedmetadata',()=>{S.aud.dur=AUDIO.duration;render()});
 AUDIO.addEventListener('play',()=>{S.aud.playing=true;render()});
 AUDIO.addEventListener('pause',()=>{S.aud.playing=false;render()});
-AUDIO.addEventListener('ended',()=>{S.aud.playing=false;render()});
+AUDIO.addEventListener('ended',()=>{
+  S.aud.playing=false;
+  if(S.run&&S.run.m==='L'&&S.run.parts){
+    const nextP=S.run.parts.find(p=>p>S.run.ap);
+    if(nextP){
+      S.run.ap=nextP;
+      loadAudio();
+      toast('Part '+(nextP-1)+' selesai. Memuat Part '+nextP+'...');
+      setTimeout(()=>{A.scrollToPart({p:nextP})},300);
+    }
+  }
+  render();
+});
 AUDIO.addEventListener('timeupdate',()=>{
   S.aud.cur=AUDIO.currentTime;const c=$('#aud-cur');if(c)c.textContent=fmtT(AUDIO.currentTime);
   const sc=$('#aud-scrub');if(sc&&document.activeElement!==sc&&AUDIO.duration)sc.value=Math.round(1000*AUDIO.currentTime/AUDIO.duration);
   const b=$('#aud-bar');if(b&&AUDIO.duration)b.style.width=pct(AUDIO.currentTime,AUDIO.duration)+'%';
 });
+
+A.scrollToPart=d=>{
+  const p=+d.p;
+  const targetQ = p===1?1:p===2?11:p===3?21:31;
+  const el = document.getElementById('q'+targetQ) || document.getElementById('part-sec-'+p);
+  if(el){
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+    if(el.focus)el.focus();
+  }
+};
+A.toggleTranscript=()=>{
+  if(!S.run)return;
+  S.run.showTranscript=!S.run.showTranscript;
+  render();
+};
+A.jumpToScriptPdf=d=>{
+  if(!S.run)return;
+  S.run.showPdf=true;
+  S.run.pdfPage=+d.p;
+  const fr=$('#pdf-frame');
+  if(fr)fr.src=getPdfUrl(S.run.bk, S.run.pdfPage);
+  render();
+  toast('Membuka Audioscript hal. '+d.p+' di PDF');
+};
+
 A.resetTimer=()=>{
   if(!S.run)return;
   S.run.t0=Date.now();
