@@ -1194,15 +1194,15 @@ function computeResult(a,key){
 }
 
 /* ----- picker ----- */
-A.open=(old=>d=>{if(d.v==='L'||d.v==='R'){S.v.pick={bk:'c20',t:1,...(S.v.pick||{}),m:d.v}}return old(d)})(A.open);
+A.open=(old=>d=>{if(d.v==='L'||d.v==='R'){S.v.pick={bk:'c19',t:1,...(S.v.pick||{}),m:d.v}}return old(d)})(A.open);
 SCR.picker=()=>{
-  const s=S.v.pick||(S.v.pick={m:'L',bk:'c20',t:1}),key=getKey(s.bk,s.t,s.m),at=attempts();
+  const s=S.v.pick||(S.v.pick={m:'L',bk:'c19',t:1}),key=getKey(s.bk,s.t,s.m),at=attempts();
   const best=ps=>{const x=at.filter(a=>a.bk===s.bk&&a.t===s.t&&a.m===s.m&&a.sc!=null&&a.parts.join()===ps.join()).sort((a,b)=>pct(b.sc,b.tot)-pct(a.sc,a.tot))[0];return x?x.sc+'/'+x.tot:null};
   const all=RANGE[s.m].map((_,i)=>i+1);
   const rows=all.map(p=>{const[a,b]=RANGE[s.m][p-1],bs=best([p]),au=s.m==='L'?hasAudio(s.bk+'-'+s.t+'-'+p):null;
     return '<div class="card row g12"><span class="qn">'+p+'</span><div class="grow"><div class="t3">'+PARTN[s.m][p-1]+'</div><div class="xs mut">Questions '+a+'–'+b+(au===null?'':au?' · audio ready':' · no audio')+'</div></div>'+(bs?pill('best '+bs,'ok'):'')+'<button class="btn sm pri" data-a="goRun" data-parts="'+p+'">Start</button></div>'}).join('');
   return '<div class="view col g16">'+topbar(MOD[s.m].n)+
-  '<div class="col g8">'+seg([['c20','Cambridge 20'],['c19','Cambridge 19']],'pbk',s.bk)+seg([1,2,3,4].map(i=>[i,'Test '+i]),'pt',s.t)+'</div>'+
+  '<div class="col g8">'+seg([['c19','Cambridge 19 (Audio Ready)'],['c20','Cambridge 20']],'pbk',s.bk)+seg([1,2,3,4].map(i=>[i,'Test '+i]),'pt',s.t)+'</div>'+
   '<div class="card soft row g12">'+(key?'<span class="ico" style="color:var(--ok)">'+ic('check')+'</span><div class="grow"><div class="t3">Answer key ready</div><div class="xs mut">'+srcLabel(key)+'</div></div><button class="btn xs ghost" data-a="keyFor">Edit</button>':'<span class="ico" style="color:var(--warn)">'+ic('key')+'</span><div class="grow"><div class="t3">No answer key yet</div><div class="xs mut">Paste it once and the whole group can grade.</div></div><button class="btn sm" data-a="keyFor">Add key</button>')+'</div>'+
   '<p class="xs mut" style="margin:0 2px">Read the questions in your book or PDF, then enter answers here. Nothing from the book is stored in this app.</p>'+rows+
   '<div class="card hero"><div class="t3">Full '+MOD[s.m].n.toLowerCase()+' test</div><div class="xs mut" style="margin:4px 0 12px">All '+RANGE[s.m].length+' '+(s.m==='L'?'parts':'passages')+' in one go. Exam mode hides the pause and rewind controls.</div><div class="row g8"><button class="btn pri grow" data-a="goRun" data-parts="'+all.join(',')+'">Start full test</button><button class="chip '+(s.exam?'on':'')+'" data-a="examTog">Exam mode</button></div></div></div>';
@@ -1235,7 +1235,14 @@ function qRow(r,q,s){
 }
 function playerHtml(r){
   const k=r.bk+'-'+r.t+'-'+r.ap,a=S.aud,chp=r.parts.length>1?chips(r.parts.map(p=>[p,'Part '+p]),'apart',r.ap):'';
-  if(!hasAudio(k))return '<div class="card soft col g8">'+chp+'<div class="row g12"><span class="ico">'+ic('wave')+'</span><div class="grow sm">No audio found for '+PARTN.L[r.ap-1]+'. Import mp3 file or check audio folder.</div><button class="btn sm" data-a="audioLib">Import</button></div></div>';
+  if(!hasAudio(k)){
+  const isC20 = r.bk === 'c20';
+  return '<div class="card soft col g8">'+chp+'<div class="row g12"><span class="ico">'+ic('wave')+'</span><div class="grow sm">'+
+    (isC20 ? 'Audio bawaan tersedia lengkap di <b>Cambridge 19</b>. Untuk Cambridge 20 kamu bisa import file mp3 sendiri atau kembali dan pilih Cambridge 19.' : 'No audio found for '+PARTN.L[r.ap-1]+'. Import mp3 file or check audio folder.')+
+    '</div>'+
+    (isC20 ? '<button class="btn sm pri" data-a="switchC19">Pindah ke Cambridge 19</button>' : '<button class="btn sm" data-a="audioLib">Import</button>')+
+  '</div></div>';
+}
   const dur=a.dur||0,cur=a.cur||0;
   return '<div class="player col g8">'+chp+'<div class="row between xs mut"><span id="aud-cur" class="mono">'+fmtT(cur)+'</span><span class="mono">'+fmtT(dur)+'</span></div>'+
   (r.exam?'<div class="bar"><i id="aud-bar" style="width:'+pct(cur,dur)+'%"></i></div>':'<input id="aud-scrub" class="scrub" type="range" min="0" max="1000" value="'+(dur?Math.round(1000*cur/dur):0)+'" data-i="seek" aria-label="Seek">')+
@@ -1371,6 +1378,7 @@ AUDIO.addEventListener('timeupdate',()=>{
   const sc=$('#aud-scrub');if(sc&&document.activeElement!==sc&&AUDIO.duration)sc.value=Math.round(1000*AUDIO.currentTime/AUDIO.duration);
   const b=$('#aud-bar');if(b&&AUDIO.duration)b.style.width=pct(AUDIO.currentTime,AUDIO.duration)+'%';
 });
+A.switchC19=()=>{if(S.run){S.run.bk='c19';loadAudio();render()}};
 A.apart=d=>{S.run.ap=+d.v;loadAudio()};
 A.playpause=()=>{if(!AUDIO.src)return;if(AUDIO.paused)AUDIO.play().catch(()=>toast('Tap play again to start the audio'));else if(!S.run.exam)AUDIO.pause()};
 A.skip=d=>{AUDIO.currentTime=clamp(AUDIO.currentTime+ +d.v,0,AUDIO.duration||1e9)};
