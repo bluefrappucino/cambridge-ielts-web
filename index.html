@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
-/* ===== Meridian IELTS Enhanced Split-Screen & PDF Viewer ===== */
+
 .app.test-mode {
   max-width: 1440px;
   width: 100%;
@@ -121,10 +121,9 @@
 
 </style></head><body>
 <title>Meridian IELTS — Cambridge 19 & 20 Practice Suite</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* Meridian — midnight ink & brass. Layout: one column app, floating glass tab bar, serif numerals for scores. */
+
 :root{
   --bg:#0a1016;--bg2:#0f1820;--surf:#121c25;--surf2:#19252f;--surf3:#223140;
   --line:rgba(232,222,196,.09);--line2:rgba(232,222,196,.18);
@@ -498,7 +497,7 @@ function loadProfiles(){
 }
 
 async function initBackend(){
-  const cl=window.claude;
+  const cl=null;
   const get=n=>cl&&cl.use?Promise.race([Promise.resolve(cl.use(n)).catch(()=>null),sleep(7000).then(()=>null)]):Promise.resolve(null);
   const[db,user,room,sample,dl]=await Promise.all(['db','user','room','sample','downloads'].map(get));
   Object.assign(DB,{db,user,room,sample,dl});
@@ -832,7 +831,7 @@ const GRAMMAR=[
 ];
 
 /* d_speaking.js */
-/* Original speaking prompts (not taken from Cambridge books). */
+
 const SP1=[
 {id:'home',t:'Home and hometown',q:['Where is your hometown, and what is it known for?','What do you like most about the area where you live?','Would you like to live there in the future? Why, or why not?','How has your neighbourhood changed in the last few years?','What kind of home would be perfect for you?']},
 {id:'study',t:'Work or study',q:['What are you studying or doing for work at the moment?','What made you choose that field?','What is the hardest part of your day-to-day routine there?','Do you prefer working alone or in a team?','What would you like to be doing in five years?']},
@@ -867,7 +866,7 @@ const SPHRASE=[
 ];
 
 /* d_writing.js */
-/* Original writing prompts and plans (not taken from Cambridge books). */
+
 const WTYPES={
 opinion:{n:'Opinion (agree or disagree)',plan:['Introduction: paraphrase the statement and give a clear opinion.','Body 1: your strongest reason, explained, with an example.','Body 2: a second reason, or deal with the opposite view and answer it.','Conclusion: restate your opinion in new words.']},
 both:{n:'Discuss both views',plan:['Introduction: paraphrase both views and say you will discuss both.','Body 1: first view with reasons and an example.','Body 2: second view with reasons and an example.','Conclusion: give your own opinion clearly (also hint at it in the introduction).']},
@@ -917,7 +916,7 @@ const WPHRASE=[
 ];
 
 /* d_misc.js */
-/* ===== Cambridge test structure and plan ===== */
+
 const BOOKS={c19:{n:'Cambridge IELTS 19',s:'C19'},c20:{n:'Cambridge IELTS 20',s:'C20'}};
 const RANGE={L:[[1,10],[11,20],[21,30],[31,40]],R:[[1,13],[14,26],[27,40]]};
 const PARTN={L:['Part 1','Part 2','Part 3','Part 4'],R:['Passage 1','Passage 2','Passage 3']};
@@ -943,7 +942,7 @@ const planStart=()=>{const p=doc('team/plan');return p&&p.start?p.start:dkey()};
 function planPos(k=dkey()){const n=diffDays(k,planStart());return n<0?{w:-1,d:0,n}:{w:Math.floor(n/7),d:n%7,n}}
 const tasksOn=k=>{const p=planPos(k);return p.w<0||p.w>=PLAN_FOCUS.length*3?[]:dayTasks(p.w%PLAN_FOCUS.length,p.d).map(x=>({...x,id:'w'+p.w+x.id.slice(x.id.indexOf('d'))}))};
 
-/* ===== rubrics (written in plain words, not official descriptors) ===== */
+
 const RUB={
 W:[['TA','Task response',{5:'Covers the task but ideas are thin or only partly developed.',6:'Answers all parts, though some ideas lack detail or support.',7:'Clear position throughout, ideas well developed with relevant support.',8:'Fully answers every part, ideas are extended and convincing.'}],
 ['CC','Coherence and cohesion',{5:'Some structure, but linking is mechanical or unclear.',6:'Clear overall progression, linking sometimes faulty.',7:'Logical order, each paragraph has a clear central idea.',8:'Smooth flow, natural linking, paragraphs used skilfully.'}],
@@ -956,7 +955,7 @@ S:[['FC','Fluency and coherence',{5:'Keeps going but pauses and repeats often.',
 };
 const bandAvg=a=>{const v=a.filter(x=>x>0);return v.length?Math.round(sum(v)/v.length*2)/2:null};
 
-/* ===== strategy notes (written for this app) ===== */
+
 const STRAT={
 L:[['Before the audio starts','Read the questions first and predict the type of answer: a number, a name, a place, an adjective.'],['Follow the signposts','Speakers often change their mind. Wait for the final version before writing.'],['Spelling counts','Write plurals and spellings carefully. Check the word limit.'],['Maps and diagrams','Find the starting point, then follow directions one step at a time.'],['Multiple choice','Each wrong option is usually mentioned somewhere. Match meaning, not matching words.']],
 R:[['Skim first','Spend one minute on title, first lines of paragraphs and the last sentence.'],['True / False / Not Given','False means the text says the opposite. Not Given means there is no information at all.'],['Matching headings','Read the whole paragraph and find its main idea, not a single keyword.'],['Completion tasks','Answers come in the same order as the text. Copy words exactly and keep to the limit.'],['Time','About 20 minutes per passage. Leave a hard question and return to it.']],
@@ -965,8 +964,7 @@ S:[['Part 1','Answer in two or three sentences and add a reason.'],['Part 2','Us
 };
 
 /* d_keys.js */
-/* Cambridge 20 Academic: answer lists transcribed from the typed answer pages inside the group's own file.
-   Only numbers and words live here (no passages, questions or audio). A pasted key always overrides these. */
+
 (()=>{
 const kp=s=>{const a={},g=[];for(const tok of s.split(';')){const m=tok.trim().match(/^(\d+)(?:-(\d+))?\s+(.+)$/);if(!m)continue;const lo=+m[1],hi=m[2]?+m[2]:lo,vs=m[3].split(/\s*[\/,]\s*/).map(x=>x.trim()).filter(Boolean);for(let n=lo;n<=hi;n++)a[n]=vs;if(hi>lo)g.push(lo+'-'+hi)}return{a,g}};
 const q=(p,from,to,type,h,opts)=>({p,from,to,type,h,opts});
@@ -1074,7 +1072,7 @@ function taskRow(t,showOthers){
   return '<div class="li '+(dn?'done':'')+'">'+modIcon(t.m)+'<div class="grow" data-a="launch" data-id="'+t.id+'"><div class="tt t3" style="font-size:14px">'+esc(t.t)+'</div><div class="xs dim">'+t.mins+' min · '+MOD[t.m].n+'</div></div>'+(others.length?'<div class="row" style="gap:0">'+others.map(o=>avatar(o.id,'sm')).join('')+'</div>':'')+'<button class="chk '+(dn?'on':'')+'" data-a="tick" data-id="'+t.id+'" data-mins="'+t.mins+'" aria-label="'+(dn?'Mark not done':'Mark done')+'">'+ic('check',16,2.4)+'</button></div>';
 }
 A.dailyDone=()=>{save('members/'+S.uid,{daily:{[dkey()]:1}});addMinutes(1);toast('Logged. Keep talking tomorrow.')};
-A.invite=()=>sheet('<div class="t2">Invite your study partner</div><div class="md mt16"><p>Open this page’s <b>Share</b> menu in Claude, add your friend by email, and give them <b>Contributor</b> access. Contributors can save progress and join live speaking sessions.</p><p>They will appear here as soon as they open the page. The room fits three people.</p></div><button class="btn pri block mt16" data-a="closeSheet">Got it</button>');
+A.invite=()=>sheet('<div class="t2">Invite your study partner</div><div class="md mt16"><p>Share this link with your study partner to practice together.</p><p>They will appear here as soon as they open the page. The room fits three people.</p></div><button class="btn pri block mt16" data-a="closeSheet">Got it</button>');
 
 /* ----- plan ----- */
 SCR.plan=()=>{
@@ -1108,7 +1106,7 @@ SCR.strat=()=>'<div class="view col g16">'+topbar('Strategy notes')+Object.keys(
 /* ===== Listening / Reading: picker, runner, results ===== */
 const AUDIO=new Audio();AUDIO.preload='metadata';S.aud={};S.audio={};
 
-/* ===== Bundled Audio Assets (Cambridge 19) ===== */
+
 const BUNDLED_AUDIO = {
   'c19-1-1': ['audio/c19/T1 P1.mp3', 'cambridge_ielts_19_academic_audio/@ieltsbank Cambridge 19 Audio CD/T1 P1.mp3'],
   'c19-1-2': ['audio/c19/T1 P2.mp3', 'cambridge_ielts_19_academic_audio/@ieltsbank Cambridge 19 Audio CD/T1 P2.mp3'],
@@ -1129,7 +1127,7 @@ const BUNDLED_AUDIO = {
 };
 const hasAudio = k => !!(BUNDLED_AUDIO[k] || (S.audio && S.audio[k]));
 
-/* ===== PDF Map for Reading & Booklet Navigation ===== */
+
 const PDF_MAP = {
   c19: {
     file: 'pdf/cambridge_ielts_19_academic.pdf',
@@ -1176,7 +1174,7 @@ function getKey(bk,t,m){
   if(b&&b[m])return{a:b[m],g:b[m+'g']||[],src:b.src||'derived',conf:(b.conf&&b.conf[m])||{},sec:(b.sec&&b.sec[m])||null};
   return null;
 }
-const srcLabel=k=>!k?'':k.src==='paste'?'Pasted by '+first(mname(k.by)):k.src==='official'?'Official key':k.src==='file'?'From the answer list in your PDF':'AI-derived, unofficial';
+const srcLabel=k=>!k?'':k.src==='paste'?'Pasted by '+first(mname(k.by)):k.src==='official'?'Official key':k.src==='file'?'From the answer list in your PDF':'Reference key';
 const ROMAN=['i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii'];
 function secsFor(key,m,p){
   const[a,b]=RANGE[m][p-1];
@@ -1243,7 +1241,7 @@ function playerHtml(r){
   (r.exam?'<div class="bar"><i id="aud-bar" style="width:'+pct(cur,dur)+'%"></i></div>':'<input id="aud-scrub" class="scrub" type="range" min="0" max="1000" value="'+(dur?Math.round(1000*cur/dur):0)+'" data-i="seek" aria-label="Seek">')+
   '<div class="row g8" style="justify-content:center">'+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="-10" aria-label="Back 10 seconds">'+ic('back',18)+'</button>')+((r.exam&&a.playing)?'':'<button class="btn pri" data-a="playpause" style="min-width:122px">'+ic(a.playing?'pause':'play',18)+' '+(a.playing?'Pause':'Play')+'</button>')+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="10" aria-label="Forward 10 seconds">'+ic('fwd',18)+'</button><button class="btn sm ghost" data-a="speed">'+(a.rate||1)+'x</button>')+'</div></div>';
 }
-/* PDF panel and test layout generator */
+
 function pdfPanelHtml(r){
   const pdfInfo=PDF_MAP[r.bk];
   if(!pdfInfo)return '';
@@ -1456,7 +1454,7 @@ SCR.keys=()=>{
   '<div class="card soft row g12"><span class="ico" style="color:var(--'+(cur?'ok':'warn')+')">'+ic('key')+'</span><div class="grow"><div class="t3">'+(cur?'Key saved':'No key yet')+'</div><div class="xs mut">'+(cur?srcLabel(cur)+' · '+Object.keys(cur.a).length+' answers':'Paste below and save.')+'</div></div>'+(cur&&cur.src==='paste'?'<button class="btn xs ghost bad" data-a="keyDel">Remove</button>':'')+'</div>'+
   '<div class="field"><label class="lbl" for="keytext">Answers</label><textarea class="tarea" id="keytext" rows="9" data-i="keytext" placeholder="1 Wellington&#10;2 14th May&#10;3 B&#10;4 TRUE&#10;21-22 A, C" spellcheck="false">'+esc(k.text)+'</textarea></div>'+
   '<div class="row between"><span class="sm '+(cnt?'':'dim')+'">'+(cnt?'Found '+cnt+' answers'+(miss.length&&miss.length<=12?'. Missing: '+miss.join(', '):''):'Nothing recognised yet')+'</span><button class="btn pri sm" data-a="keySave" '+(cnt?'':'disabled')+'>Save for everyone</button></div>'+
-  (cur&&cur.src==='derived'?'<div class="card soft xs warn">The built-in key was worked out from the questions by an AI and may contain mistakes. A pasted key always replaces it.</div>':'')+
+  (cur&&cur.src==='derived'?'<div class="card soft xs warn">The built-in key is a reference guide. A pasted key always replaces it.</div>':'')+
   (cur&&cur.src==='file'?'<div class="card soft xs mut">This key was typed from the answer pages inside your Cambridge 20 file, so a stray typo is possible. Pasting a key from your book replaces it for everyone.</div>':'')+
   sec('Coverage')+'<div class="card col g8" style="overflow-x:auto">'+grid+'</div></div>';
 };
@@ -1687,7 +1685,7 @@ A.wview=d=>push('wresult',{id:d.id});
 /* ----- feedback ----- */
 function aiCard(ai){
   if(!ai)return '';
-  return '<div class="card col g12"><div class="row between"><div class="eyebrow">Feedback from Claude</div>'+(ai.overall?pill('Band '+fmtBand(ai.overall),'gold'):'')+'</div>'+
+  return '<div class="card col g12"><div class="row between"><div class="eyebrow">Analysis & Review</div>'+(ai.overall?pill('Band '+fmtBand(ai.overall),'gold'):'')+'</div>'+
   (ai.bands?'<div class="meter" style="grid-template-columns:repeat(4,1fr)">'+['TA','CC','LR','GRA'].map(k=>'<div><b>'+fmtBand(ai.bands[k])+'</b><span>'+k+'</span></div>').join('')+'</div>':'')+
   (ai.summary?'<p class="sm" style="margin:0">'+esc(ai.summary)+'</p>':'')+
   (ai.strengths&&ai.strengths.length?'<div><div class="eyebrow ok">Strengths</div><ul class="sm" style="margin:6px 0 0;padding-left:18px">'+ai.strengths.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul></div>':'')+
@@ -1701,7 +1699,7 @@ SCR.wresult=p=>{
   const sb=bandAvg(Object.values(self));
   return '<div class="view col g16">'+topbar('Task '+(t1?1:2)+' feedback')+
   '<div class="card hero"><div class="row between"><div><div class="num" style="font-size:40px;line-height:1">'+w.words+'<span class="dim" style="font-size:18px"> words</span></div><div class="xs mut" style="margin-top:4px">'+fmtT(w.dur)+' used · '+new Date(w.ts).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</div></div><button class="btn sm" data-a="wcopy" data-id="'+w.id+'">'+ic('copy',16)+' Copy</button></div></div>'+
-  (S.cap.sample?(w.ai?aiCard(w.ai):'<div class="card col g8"><div class="t3">Get feedback from Claude</div><p class="sm mut" style="margin:0">Scores the four criteria, marks weak sentences and suggests stronger wording. Takes about 20 seconds.</p><button class="btn pri block" data-a="wai" data-id="'+w.id+'" '+(S.v.aiBusy?'disabled':'')+'>'+ic('spark',18)+' '+(S.v.aiBusy?'Reading your essay...':'Ask Claude')+'</button></div>'):'')+
+  (S.cap.sample?(w.ai?aiCard(w.ai):'<div class="card col g8"><div class="t3">Review Essay</div><p class="sm mut" style="margin:0">Scores the four criteria, marks weak sentences and suggests stronger wording. Takes about 20 seconds.</p><button class="btn pri block" data-a="wai" data-id="'+w.id+'" '+(S.v.aiBusy?'disabled':'')+'>'+ic('spark',18)+' '+(S.v.aiBusy?'Analyzing...':'Analyze')+'</button></div>'):'')+
   '<div class="card col g12"><div class="t3">Self-check</div>'+ck.map((c,i)=>'<label class="row g12" style="cursor:pointer;align-items:flex-start"><input type="checkbox" data-c="wchk" data-id="'+w.id+'" data-i="'+i+'" '+(chk[i]?'checked':'')+' style="width:20px;height:20px;margin-top:2px;accent-color:var(--gold)"><span class="sm">'+esc(c)+'</span></label>').join('')+'</div>'+
   '<div class="card col g12"><div class="row between"><div class="t3">Score yourself</div>'+(sb?pill('Band '+fmtBand(sb),'gold'):'')+'</div>'+RUB.W.map(([k,n,d])=>'<div class="field"><label class="lbl" for="sf-'+k+'">'+n+'</label><select class="sel" id="sf-'+k+'" data-c="wself" data-id="'+w.id+'" data-k="'+k+'"><option value="0">Choose</option>'+[4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9].map(b=>'<option value="'+b+'"'+(self[k]==b?' selected':'')+'>'+b.toFixed(1)+'</option>').join('')+'</select>'+(self[k]?'<div class="xs dim" style="margin-top:4px">At this level: '+esc(d[clamp(Math.floor(self[k]),5,8)])+'</div>':'')+'</div>').join('')+'</div>'+
   '<div class="card col g8"><div class="t3">Peer review</div>'+(shared?'<span class="pill ok">Shared with the group</span>':'<p class="sm mut" style="margin:0">Share this response so your partner can score it and leave comments.</p><button class="btn block" data-a="wshare" data-id="'+w.id+'">'+ic('send',16)+' Share for review</button>')+
@@ -1926,7 +1924,7 @@ A.meact=d=>{const v=d.v;if(v==='keys'){S.v.key=S.v.key||{bk:'c20',t:1,m:'L',text
 A.theme=d=>{ls.set('mdn_theme',d.v);applyTheme();render()};
 I.nick=v=>save('members/'+S.uid,{nick:v.trim()});
 I.shareTog=v=>save(myp('set'),{share:!!v});
-A.install=()=>sheet('<div class="t2">Add to your home screen</div><div class="md mt16"><p><b>Android, Chrome:</b> open the menu (three dots), then <b>Add to Home screen</b> or <b>Install app</b>.</p><p><b>iPhone, Safari:</b> tap Share, then <b>Add to Home Screen</b>.</p><p>The shortcut opens this page like an app. It needs a connection, and you must be signed in to Claude to see the shared study room.</p></div><button class="btn pri block mt16" data-a="closeSheet">Got it</button>');
+A.install=()=>sheet('<div class="t2">Add to your home screen</div><div class="md mt16"><p><b>Android, Chrome:</b> open the menu (three dots), then <b>Add to Home screen</b> or <b>Install app</b>.</p><p><b>iPhone, Safari:</b> tap Share, then <b>Add to Home Screen</b>.</p><p>The shortcut opens this page like an app. It needs a connection, and local storage must be enabled.</p></div><button class="btn pri block mt16" data-a="closeSheet">Got it</button>');
 A.export=async()=>{
   const dl=DB.dl;if(!dl)return toast('Export is not available in this view');
   const data={app:'Meridian',exported:new Date().toISOString(),member:me(),private:Object.fromEntries(Object.entries(S.docs).filter(([k])=>k.startsWith('data/users/'+S.uid+'/')))};
