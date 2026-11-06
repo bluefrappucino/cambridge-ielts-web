@@ -1,5 +1,5 @@
 // Service Worker for Cambridge IELTS PWA
-const CACHE_NAME = 'ielts-pwa-v2';
+const CACHE_NAME = 'ielts-pwa-v3';
 const CORE_ASSETS = [
   './manifest.json',
   './icon-192.png',

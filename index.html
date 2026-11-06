@@ -1033,16 +1033,17 @@ const PARTN={L:['Part 1','Part 2','Part 3','Part 4'],R:['Passage 1','Passage 2',
 const TESTMIN={L:{1:8,2:8,3:8,4:8},R:{1:20,2:20,3:20}};
 const BKEYS={}; /* built-in answer keys, filled by d_keys.js when present */
 
-const PLAN_FOCUS=[['c20',1],['c19',1],['c20',2],['c19',2],['c20',3],['c19',3],['c20',4],['c19',4]];
+const PLAN_FOCUS=[['c19',1],['c19',2],['c19',3],['c19',4],['c20',1],['c20',2],['c20',3],['c20',4]];
 const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 /* returns tasks for week index w (0-7) and day-of-week d (0=Mon) */
 function dayTasks(w,d){
   const[bk,t]=PLAN_FOCUS[w%PLAN_FOCUS.length],bn=BOOKS[bk].s+' T'+t,id=(k)=>'w'+w+'d'+d+k,T=[];
   const gram=GRAMMAR[(w*2+(d===6?1:0))%GRAMMAR.length],t1=WT1[w%WT1.length],t2=WT2[(w*3+1)%WT2.length];
-  if(d===0){T.push({id:id('a'),m:'L',t:bn+' Listening, Parts 1 and 2',mins:40,act:{go:'test',bk,t,m:'L',parts:[1,2]}});T.push({id:id('b'),m:'V',t:'Learn 8 new words and review due cards',mins:15,act:{go:'vocab'}})}
+  const lt=((t-1)%4)+1,lbn='C19 T'+lt;
+  if(d===0){T.push({id:id('a'),m:'L',t:lbn+' Listening, Parts 1 and 2',mins:40,act:{go:'test',bk:'c19',t:lt,m:'L',parts:[1,2]}});T.push({id:id('b'),m:'V',t:'Learn 8 new words and review due cards',mins:15,act:{go:'vocab'}})}
   if(d===1){T.push({id:id('a'),m:'R',t:bn+' Reading, Passage 1',mins:25,act:{go:'test',bk,t,m:'R',parts:[1]}});T.push({id:id('b'),m:'G',t:'Grammar: '+gram.t,mins:20,act:{go:'grammar',id:gram.id}})}
   if(d===2){T.push({id:id('a'),m:'W',t:'Task 1 practice: '+t1.title,mins:25,act:{go:'write',kind:'t1',pid:t1.id}});T.push({id:id('b'),m:'V',t:'Review due vocabulary cards',mins:10,act:{go:'vocab'}})}
-  if(d===3){T.push({id:id('a'),m:'L',t:bn+' Listening, Parts 3 and 4',mins:40,act:{go:'test',bk,t,m:'L',parts:[3,4]}});T.push({id:id('b'),m:'X',t:'Go through this week’s wrong answers',mins:15,act:{go:'review'}})}
+  if(d===3){T.push({id:id('a'),m:'L',t:lbn+' Listening, Parts 3 and 4',mins:40,act:{go:'test',bk:'c19',t:lt,m:'L',parts:[3,4]}});T.push({id:id('b'),m:'X',t:'Go through this week’s wrong answers',mins:15,act:{go:'review'}})}
   if(d===4){T.push({id:id('a'),m:'R',t:bn+' Reading, Passages 2 and 3',mins:45,act:{go:'test',bk,t,m:'R',parts:[2,3]}});T.push({id:id('b'),m:'V',t:'Review due vocabulary cards',mins:10,act:{go:'vocab'}})}
   if(d===5){T.push({id:id('a'),m:'W',t:'Task 2 essay: '+WTYPES[t2.type].n,mins:45,act:{go:'write',kind:'t2',pid:t2.id}});T.push({id:id('b'),m:'S',t:'Speaking practice together (Parts 1 to 3)',mins:30,act:{go:'speak'}})}
   if(d===6){T.push({id:id('a'),m:'G',t:'Grammar: '+gram.t,mins:20,act:{go:'grammar',id:gram.id}});T.push({id:id('b'),m:'X',t:'Weekly review: read feedback and plan next week',mins:15,act:{go:'review'}});if(w%4===3)T.push({id:id('c'),m:'T',t:'Checkpoint: full '+bn+' Listening',mins:40,act:{go:'test',bk,t,m:'L',parts:[1,2,3,4]}})}
@@ -1334,7 +1335,12 @@ const PDF_MAP = {
     file: 'pdf/cambridge_ielts_19_academic.pdf',
     altFile: 'cambridge_ielts_19_academic.pdf',
     title: 'Cambridge IELTS 19 Academic',
-    L: { 1: 10, 2: 33, 3: 55, 4: 78 },
+    L: {
+      1: { 1: 10, 2: 12, 3: 14, 4: 16 },
+      2: { 1: 33, 2: 35, 3: 37, 4: 39 },
+      3: { 1: 55, 2: 57, 3: 59, 4: 61 },
+      4: { 1: 78, 2: 80, 3: 82, 4: 84 }
+    },
     R: {
       1: { 1: 18, 2: 22, 3: 27 },
       2: { 1: 41, 2: 45, 3: 50 },
@@ -1346,7 +1352,12 @@ const PDF_MAP = {
     file: 'pdf/cambridge_ielts_20_academic_students_book.pdf',
     altFile: 'cambridge_ielts_20_academic_students_book.pdf',
     title: 'Cambridge IELTS 20 Academic',
-    L: { 1: 3, 2: 39, 3: 77, 4: 114 },
+    L: {
+      1: { 1: 3, 2: 5, 3: 7, 4: 9 },
+      2: { 1: 39, 2: 41, 3: 43, 4: 45 },
+      3: { 1: 77, 2: 79, 3: 81, 4: 83 },
+      4: { 1: 114, 2: 116, 3: 118, 4: 120 }
+    },
     R: {
       1: { 1: 11, 2: 16, 3: 21 },
       2: { 1: 47, 2: 52, 3: 57 },
@@ -1402,24 +1413,40 @@ SCR.picker=()=>{
   const all=RANGE[s.m].map((_,i)=>i+1);
   const rows=all.map(p=>{const[a,b]=RANGE[s.m][p-1],bs=best([p]),au=s.m==='L'?hasAudio(s.bk+'-'+s.t+'-'+p):null;
     return '<div class="card row g12"><span class="qn">'+p+'</span><div class="grow"><div class="t3">'+PARTN[s.m][p-1]+'</div><div class="xs mut">Questions '+a+'–'+b+(au===null?'':au?' · audio ready':' · no audio')+'</div></div>'+(bs?pill('best '+bs,'ok'):'')+'<button class="btn sm pri" data-a="goRun" data-parts="'+p+'">Start</button></div>'}).join('');
+  if(s.m==='L') s.bk='c19';
+  const bkSeg=s.m==='L'?seg([['c19','Cambridge 19 (Audio Ready)']],'pbk',s.bk):seg([['c19','Cambridge 19'],['c20','Cambridge 20']],'pbk',s.bk);
   return '<div class="view col g16">'+topbar(MOD[s.m].n)+
-  '<div class="col g8">'+seg([['c19','Cambridge 19 (Audio Ready)'],['c20','Cambridge 20']],'pbk',s.bk)+seg([1,2,3,4].map(i=>[i,'Test '+i]),'pt',s.t)+'</div>'+
+  '<div class="col g8">'+bkSeg+seg([1,2,3,4].map(i=>[i,'Test '+i]),'pt',s.t)+'</div>'+
   '<div class="card soft row g12">'+(key?'<span class="ico" style="color:var(--ok)">'+ic('check')+'</span><div class="grow"><div class="t3">Answer key ready</div><div class="xs mut">'+srcLabel(key)+'</div></div><button class="btn xs ghost" data-a="keyFor">Edit</button>':'<span class="ico" style="color:var(--warn)">'+ic('key')+'</span><div class="grow"><div class="t3">No answer key yet</div><div class="xs mut">Paste it once and the whole group can grade.</div></div><button class="btn sm" data-a="keyFor">Add key</button>')+'</div>'+
   '<p class="xs mut" style="margin:0 2px">Read the questions in your book or PDF, then enter answers here. Nothing from the book is stored in this app.</p>'+rows+
   '<div class="card hero"><div class="t3">Full '+MOD[s.m].n.toLowerCase()+' test</div><div class="xs mut" style="margin:4px 0 12px">All '+RANGE[s.m].length+' '+(s.m==='L'?'parts':'passages')+' in one go. Exam mode hides the pause and rewind controls.</div><div class="row g8"><button class="btn pri grow" data-a="goRun" data-parts="'+all.join(',')+'">Start full test</button><button class="chip '+(s.exam?'on':'')+'" data-a="examTog">Exam mode</button></div></div></div>';
 };
-A.pbk=d=>{S.v.pick.bk=d.v;render()};A.pt=d=>{S.v.pick.t=+d.v;render()};A.examTog=()=>{S.v.pick.exam=!S.v.pick.exam;render()};
+A.pbk=d=>{
+  if(S.v.pick&&S.v.pick.m==='L'&&d.v==='c20'){
+    toast('Audio Cambridge 20 belum tersedia. Dialihkan ke Cambridge 19.');
+    S.v.pick.bk='c19';
+    render();
+    return;
+  }
+  S.v.pick.bk=d.v;
+  render();
+};A.pt=d=>{S.v.pick.t=+d.v;render()};A.examTog=()=>{S.v.pick.exam=!S.v.pick.exam;render()};
 A.goRun=d=>{const s=S.v.pick;startRun({bk:s.bk,t:s.t,m:s.m,parts:String(d.parts).split(',').map(Number),exam:s.exam&&String(d.parts).includes(',')})};
 A.keyFor=()=>{const s=S.v.pick;S.v.key={bk:s.bk,t:s.t,m:s.m,text:''};push('keys')};
 
 /* ----- runner ----- */
 function startRun(o){
+  if(o.m==='L'){
+    o.bk='c19';
+    if(o.t>4)o.t=((o.t-1)%4)+1;
+  }
   const id=o.bk+'-'+o.t+'-'+o.m+'-'+o.parts.join(''),dr=ls.get('run_'+id,null);
   const pDef=(PDF_MAP[o.bk]&&PDF_MAP[o.bk][o.m]&&PDF_MAP[o.bk][o.m][o.t])||null;
   let initPdfPage=1;
-  if(o.m==='R'&&pDef)initPdfPage=pDef[o.parts[0]]||pDef[1]||1;
-  else if(o.m==='L'&&PDF_MAP[o.bk]&&PDF_MAP[o.bk].L)initPdfPage=PDF_MAP[o.bk].L[o.t]||1;
-  S.run={id,bk:o.bk,t:o.t,m:o.m,parts:o.parts,ans:(dr&&dr.ans)||{},t0:(dr&&dr.t0&&Date.now()-dr.t0<6*36e5)?dr.t0:Date.now(),exam:!!o.exam,from:o.from,ap:o.parts[0],pad:false,cur:null,showPdf:(o.m==='R'),pdfPage:initPdfPage,mobView:'ans'};
+  if(pDef&&typeof pDef==='object')initPdfPage=pDef[o.parts[0]]||pDef[1]||1;
+  else if(typeof pDef==='number')initPdfPage=pDef;
+  else if(o.m==='L')initPdfPage=10;
+  S.run={id,bk:o.bk,t:o.t,m:o.m,parts:o.parts,ans:(dr&&dr.ans)||{},t0:(dr&&dr.t0&&Date.now()-dr.t0<6*36e5)?dr.t0:Date.now(),exam:!!o.exam,from:o.from,ap:o.parts[0],pad:false,cur:null,showPdf:true,pdfPage:initPdfPage,mobView:'ans'};
   S.v.pick={...(S.v.pick||{}),bk:o.bk,t:o.t,m:o.m};
   push('run');if(o.m==='L')loadAudio();
 }
@@ -1450,14 +1477,14 @@ function playerHtml(r){
   return '<div class="player col g8 '+(a.playing?'playing':'')+'">'+chp+
   '<div class="row between card soft" style="padding:6px 10px;font-size:12px;margin:-2px 0">'+
     '<span class="row g8"><span class="pill ok sm">Part '+r.ap+'</span><span class="dim">Memutar soal <b>'+qRangeText+'</b></span></span>'+
-    '<button class="btn xs ghost" data-a="scrollToPart" data-p="'+r.ap+'" title="Loncat langsung ke soal Part ini">🎯 Loncat ke Soal</button>'+
+    '<button class="btn xs ghost" data-a="scrollToPart" data-p="'+r.ap+'" title="Loncat langsung ke soal Part ini">Loncat ke Soal</button>'+
   '</div>'+
   '<div class="row between xs mut"><span id="aud-cur" class="mono">'+fmtT(cur)+'</span><span class="mono">'+fmtT(dur)+'</span></div>'+
   (r.exam?'<div class="bar"><i id="aud-bar" style="width:'+pct(cur,dur)+'%"></i></div>':'<input id="aud-scrub" class="scrub" type="range" min="0" max="1000" value="'+(dur?Math.round(1000*cur/dur):0)+'" data-i="seek" aria-label="Seek">')+
   '<div class="row g8" style="justify-content:center">'+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="-10" aria-label="Back 10 seconds">'+ic('back',18)+'</button>')+((r.exam&&a.playing)?'':'<button class="btn pri" data-a="playpause" style="min-width:122px">'+ic(a.playing?'pause':'play',18)+' '+(a.playing?'Pause':'Play')+'</button>')+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="10" aria-label="Forward 10 seconds">'+ic('fwd',18)+'</button><button class="btn sm ghost" data-a="speed">'+(a.rate||1)+'x</button>')+'</div>'+
   '<div class="row between" style="margin-top:4px">'+
-    '<button class="btn xs ghost" data-a="toggleTranscript"><span class="ico">'+ic('book',14)+'</span> '+(r.showTranscript?'Sembunyikan Transcript':'📝 Buka Transcript Audio')+'</button>'+
-    '<button class="btn xs ghost" data-a="jumpToScriptPdf" data-p="'+scriptP+'"><span class="ico">'+ic('external',12)+'</span> Lihat di PDF Buku (Hal. '+scriptP+')</button>'+
+    '<button class="btn xs ghost" data-a="toggleTranscript"><span class="ico">'+ic('book',14)+'</span> '+(r.showTranscript?'Sembunyikan Transcript':'Buka Transcript Audio')+'</button>'+
+    '<button class="btn xs ghost" data-a="openBookletPdf" data-p="'+(r.pdfPage||10)+'"><span class="ico">'+ic('external',12)+'</span> Buka Soal PDF (Hal. '+(r.pdfPage||10)+')</button>'+
   '</div>'+
   (r.showTranscript?'<div class="transcript-card mt8"><div class="row between mb8"><b>Audioscript Part '+r.ap+' (Test '+r.t+')</b><span class="xs dim">Kunci jawaban tertera pada teks</span></div><p class="xs mut" style="margin:0 0 8px">Lihat naskah rekaman lengkap dan kata kunci jawaban resmi di halaman '+scriptP+' pada buku PDF.</p><button class="btn sm pri block" data-a="jumpToScriptPdf" data-p="'+scriptP+'">'+ic('book',16)+' Buka Halaman '+scriptP+' di Viewer PDF</button></div>':'')+
   '</div>';
@@ -1467,16 +1494,23 @@ function pdfPanelHtml(r){
   const pdfInfo=PDF_MAP[r.bk];
   if(!pdfInfo)return '';
   const pDef=(pdfInfo[r.m]&&pdfInfo[r.m][r.t])||null;
-  const pChips=r.m==='R'&&pDef?r.parts.map(p=>'<button class="chip xs '+(r.ap===p?'on':'')+'" data-a="jumpPassage" data-p="'+p+'">Passage '+p+' (p.'+(pDef[p]||'')+')</button>').join(''):'';
+  let pChips='';
+  if(pDef&&typeof pDef==='object'){
+    const prefix=r.m==='R'?'Passage ':'Part ';
+    pChips=r.parts.map(p=>{
+      const pg=pDef[p]||'';
+      return '<button class="chip xs '+(r.ap===p?'on':'')+'" data-a="jumpPartPage" data-p="'+p+'" data-page="'+pg+'">'+prefix+p+(pg?' (p.'+pg+')':'')+'</button>';
+    }).join('');
+  }
   const pdfUrl=getPdfUrl(r.bk, r.pdfPage||1);
   return '<div class="pdf-panel '+(r.mobView==='doc'?'mob-full':'')+'">'+
     '<div class="pdf-toolbar">'+
       '<div class="pdf-title"><span class="ico">'+ic('book',16)+'</span> '+esc(pdfInfo.title)+(r.pdfPage?' · p.'+r.pdfPage:'')+'</div>'+
       '<div class="pdf-controls">'+
         pChips+
-        '<button class="btn xs ghost" data-a="popPdf" title="Open in new window / monitor"><span class="ico">'+ic('external',14)+'</span> Pop-out</button>'+
-        (r.mobView==='doc'?'<button class="btn xs pri" data-a="mobView" data-v="ans">Return to Answers</button>':'')+
-        '<button class="btn xs ghost" data-a="togglePdf" title="Close / Hide PDF">'+ic('x',14)+'</button>'+
+        '<button class="btn xs ghost" data-a="popPdf" title="Buka PDF di jendela baru"><span class="ico">'+ic('external',14)+'</span> Pop-out</button>'+
+        (r.mobView==='doc'?'<button class="btn xs pri" data-a="mobView" data-v="ans">Lembar Jawaban</button>':'')+
+        '<button class="btn xs ghost" data-a="togglePdf" title="Tutup PDF">'+ic('x',14)+'</button>'+
       '</div>'+
     '</div>'+
     '<iframe id="pdf-frame" class="pdf-frame" src="'+pdfUrl+'" title="Cambridge IELTS PDF"></iframe>'+
@@ -1494,11 +1528,21 @@ body+='<div id="part-sec-'+p+'" class="part-container '+(isAct?'active-part':'')
   
   const pdfBtn='<button class="chip '+(r.showPdf?'on':'')+'" data-a="togglePdf"><span class="ico">'+ic('book',14)+'</span> '+(r.showPdf?'Hide PDF':(r.m==='R'?'Show Reading PDF':'Show Booklet PDF'))+'</button>';
   
-  const mobNav='<div class="mob-nav-strip seg"><button class="view-tab-btn '+(r.mobView!=='doc'?'on':'')+'" data-a="mobView" data-v="ans">✍️ Answer Sheet ('+n+'/'+qs.length+')</button><button class="view-tab-btn '+(r.mobView==='doc'?'on':'')+'" data-a="mobView" data-v="doc">📖 Cambridge PDF (p.'+(r.pdfPage||1)+')</button></div>';
+  const mobNav='<div class="mob-nav-strip seg"><button class="view-tab-btn '+(r.mobView!=='doc'?'on':'')+'" data-a="mobView" data-v="ans">Answer Sheet ('+n+'/'+qs.length+')</button><button class="view-tab-btn '+(r.mobView==='doc'?'on':'')+'" data-a="mobView" data-v="doc">Cambridge PDF (p.'+(r.pdfPage||1)+')</button></div>';
+
+  const listeningNotice=(r.m==='L')?
+    '<div class="card soft row between g12" style="border-left:3px solid var(--gold);padding:10px 14px;margin-bottom:4px">'+
+      '<div class="grow xs">'+
+        '<b style="color:var(--text)">Buku Soal Cambridge 19 (Part '+r.ap+' · Hal. '+(r.pdfPage||10)+')</b>'+
+        '<div class="mut">Tabel catatan dan pertanyaan lengkap tertera di buku soal PDF.</div>'+
+      '</div>'+
+      '<button class="btn xs pri" data-a="openBookletPdf" data-p="'+(r.pdfPage||10)+'">Buka Soal PDF</button>'+
+    '</div>':'';
 
   const ansContent='<div class="ans-panel col g12" '+(r.mobView==='doc'?'style="display:none"':'')+'>'+
     (r.m==='L'?playerHtml(r):'<div class="card soft sm mut row between"><span>'+(r.parts.length>1?'':PARTN.R[r.parts[0]-1]+' · ')+'Suggested time: '+(r.parts.length*20)+' minutes.</span>'+pdfBtn+'</div>')+
     (r.m==='L'?'<div class="row between" style="margin:-4px 2px">'+pdfBtn+'</div>':'')+
+    listeningNotice+
     body+
   '</div>';
 
@@ -1638,7 +1682,51 @@ A.resetTimer=()=>{
   toast('Waktu tes direset ke 00:00');
 };
 A.switchC19=()=>{if(S.run){S.run.bk='c19';loadAudio();render()}};
-A.apart=d=>{S.run.ap=+d.v;loadAudio()};
+A.apart=d=>{
+  if(!S.run)return;
+  S.run.ap=+d.v;
+  const pdfInfo=PDF_MAP[S.run.bk];
+  const pDef=(pdfInfo&&pdfInfo[S.run.m]&&pdfInfo[S.run.m][S.run.t])||null;
+  if(pDef&&pDef[S.run.ap]){
+    S.run.pdfPage=pDef[S.run.ap];
+    const fr=document.getElementById('pdf-frame');
+    if(fr)fr.src=getPdfUrl(S.run.bk,S.run.pdfPage);
+  }
+  loadAudio();
+  render();
+};
+
+A.jumpPartPage=d=>{
+  if(!S.run)return;
+  const p=+d.p;
+  S.run.ap=p;
+  const pg=+d.page;
+  if(pg){
+    S.run.pdfPage=pg;
+  }else{
+    const pdfInfo=PDF_MAP[S.run.bk];
+    const pDef=(pdfInfo&&pdfInfo[S.run.m]&&pdfInfo[S.run.m][S.run.t])||null;
+    if(pDef&&pDef[p])S.run.pdfPage=pDef[p];
+  }
+  const fr=document.getElementById('pdf-frame');
+  if(fr)fr.src=getPdfUrl(S.run.bk,S.run.pdfPage);
+  if(S.run.m==='L')loadAudio();
+  render();
+};
+A.jumpPassage=A.jumpPartPage;
+
+A.openBookletPdf=d=>{
+  if(!S.run)return;
+  const p=+d.p||S.run.pdfPage||1;
+  S.run.pdfPage=p;
+  S.run.showPdf=true;
+  if(window.innerWidth<768){
+    S.run.mobView='doc';
+  }
+  const fr=document.getElementById('pdf-frame');
+  if(fr)fr.src=getPdfUrl(S.run.bk,p);
+  render();
+};
 A.playpause=()=>{if(!AUDIO.src)return;if(AUDIO.paused)AUDIO.play().catch(()=>toast('Tap play again to start the audio'));else if(!S.run.exam)AUDIO.pause()};
 A.skip=d=>{AUDIO.currentTime=clamp(AUDIO.currentTime+ +d.v,0,AUDIO.duration||1e9)};
 A.speed=()=>{const o=[1,1.25,1.5,0.75],i=o.indexOf(S.aud.rate||1);S.aud.rate=o[(i+1)%o.length];AUDIO.playbackRate=S.aud.rate;render()};
@@ -2052,6 +2140,115 @@ A.rtsave=()=>{
   render();
 };
 
+/* ----- speaking recorder ----- */
+let _recMedia=null;
+let _recStream=null;
+let _recChunks=[];
+let _recBlobUrl=null;
+let _recState='idle';
+let _recTimer=0;
+let _recElapsed=0;
+
+async function startVoiceRecord(){
+  try{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+      toast('Browser tidak mendukung rekaman suara');
+      return;
+    }
+    _recStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    _recChunks=[];
+    let mime='';
+    if(typeof MediaRecorder!=='undefined'){
+      if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))mime='audio/webm;codecs=opus';
+      else if(MediaRecorder.isTypeSupported('audio/mp4'))mime='audio/mp4';
+    }
+    _recMedia=mime?new MediaRecorder(_recStream,{mimeType:mime}):new MediaRecorder(_recStream);
+    _recMedia.ondataavailable=e=>{if(e.data&&e.data.size>0)_recChunks.push(e.data)};
+    _recMedia.onstop=()=>{
+      const type=(_recMedia&&_recMedia.mimeType)||'audio/webm';
+      const blob=new Blob(_recChunks,{type});
+      if(_recBlobUrl)URL.revokeObjectURL(_recBlobUrl);
+      _recBlobUrl=URL.createObjectURL(blob);
+      _recState='stopped';
+      if(_recStream){
+        _recStream.getTracks().forEach(t=>t.stop());
+        _recStream=null;
+      }
+      clearInterval(_recTimer);
+      render();
+    };
+    _recMedia.start(250);
+    _recState='recording';
+    _recElapsed=0;
+    clearInterval(_recTimer);
+    _recTimer=setInterval(()=>{
+      _recElapsed++;
+      const el=document.getElementById('rec-clock');
+      if(el)el.textContent=fmtT(_recElapsed);
+    },1000);
+    render();
+  }catch(err){
+    console.error('Record error:',err);
+    toast('Izin mikrofon diperlukan untuk merekam suara');
+  }
+}
+
+function stopVoiceRecord(){
+  if(_recMedia&&_recMedia.state==='recording'){
+    _recMedia.stop();
+  }
+}
+
+function resetVoiceRecord(){
+  if(_recStream){
+    _recStream.getTracks().forEach(t=>t.stop());
+    _recStream=null;
+  }
+  if(_recMedia&&_recMedia.state==='recording'){
+    try{_recMedia.stop()}catch(e){}
+  }
+  if(_recBlobUrl){
+    URL.revokeObjectURL(_recBlobUrl);
+    _recBlobUrl=null;
+  }
+  _recState='idle';
+  _recElapsed=0;
+  clearInterval(_recTimer);
+}
+
+function recorderWidgetHtml(){
+  if(typeof navigator==='undefined'||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    return '';
+  }
+  if(_recState==='idle'){
+    return '<div class="card soft row between g12" style="border-radius:14px;padding:12px 14px;margin:10px 0">'+
+      '<div class="grow xs"><b style="color:var(--text)">Voice Recorder</b><div class="mut">Rekam respon jawaban speaking kamu untuk didengarkan ulang.</div></div>'+
+      '<button class="btn sm pri" data-a="recStart"><span class="ico">'+ic('mic',16)+'</span> Mulai Rekam</button>'+
+    '</div>';
+  }
+  if(_recState==='recording'){
+    return '<div class="card row between g12" style="border:1px solid var(--gold);background:rgba(230,126,34,0.08);border-radius:14px;padding:12px 14px;margin:10px 0">'+
+      '<div class="row g8"><span class="pill gold sm">Merekam...</span><span id="rec-clock" class="mono b">'+fmtT(_recElapsed)+'</span></div>'+
+      '<button class="btn sm" data-a="recStop" style="background:var(--gold);color:#111;border:none;font-weight:700"><span class="ico">'+ic('pause',16)+'</span> Selesai Rekam</button>'+
+    '</div>';
+  }
+  if(_recState==='stopped'&&_recBlobUrl){
+    return '<div class="card soft col g8" style="border-radius:14px;padding:12px 14px;margin:10px 0">'+
+      '<div class="row between"><b class="xs" style="color:var(--text)">Hasil Rekaman Suara</b><span class="pill ok sm">Tersimpan ('+fmtT(_recElapsed)+')</span></div>'+
+      '<audio controls src="'+_recBlobUrl+'" style="width:100%;height:36px;margin:4px 0"></audio>'+
+      '<div class="row g8" style="justify-content:flex-end">'+
+        '<button class="btn xs ghost" data-a="recReset">Hapus & Rekam Ulang</button>'+
+        '<a class="btn xs pri" href="'+_recBlobUrl+'" download="speaking-answer.webm">Unduh Audio</a>'+
+      '</div>'+
+    '</div>';
+  }
+  return '';
+}
+
+A.recStart=()=>{startVoiceRecord()};
+A.recStop=()=>{stopVoiceRecord()};
+A.recReset=()=>{resetVoiceRecord();render()};
+
 /* ----- solo ----- */
 A.soloGo=d=>{const part=+d.part;S.v.so={part,tid:part===1?SP1[0].id:SP2[Math.floor(Math.random()*SP2.length)].id,qi:0,ph:'idle',t0:0,dur:0,notes:'',sid:uid(),start:Date.now()};push('solo')};
 SCR.solo=()=>{
@@ -2063,26 +2260,30 @@ SCR.solo=()=>{
     body=chips(SP1.map(x=>[x.id,x.t]),'sotopic',s.tid)+(s.ph==='idle'?'<div class="card tc col g8"><div class="t2" style="font-size:22px">'+esc(t1.t)+'</div><p class="sm mut" style="margin:0">Five short questions. Answer each in two or three sentences with a reason.</p><button class="btn pri" data-a="sostart">Start</button></div>':qCard(s,qs));
   }else{
     if(s.ph==='idle')body=chips(SP2.map(x=>[x.id,x.t]),'sotopic',s.tid)+'<div class="card"><div class="eyebrow">Cue card</div><div class="cue sm" style="margin-top:8px">'+esc(card.cue)+'</div></div><button class="btn pri block" data-a="sostart">'+(s.part===2?'Start one minute of preparation':'Start Part 3 questions')+'</button>';
-    else if(s.ph==='prep'||s.ph==='talk')body='<div class="card hero tc col g8"><div class="eyebrow">'+(s.ph==='prep'?'Prepare':'Speak')+'</div><div class="num" style="font-size:56px;line-height:1">'+tm(s.t0,s.dur)+'</div></div><div class="card"><div class="cue sm">'+esc(card.cue)+'</div></div>'+(s.ph==='prep'?'<textarea class="tarea" id="so-notes" data-i="sonotes" placeholder="Key words only" rows="3">'+esc(s.notes)+'</textarea><button class="btn pri block" data-a="sotalk">Start speaking now</button>':'<button class="btn block" data-a="sostop">I have finished</button>');
+    else if(s.ph==='prep'||s.ph==='talk')body='<div class="card hero tc col g8"><div class="eyebrow">'+(s.ph==='prep'?'Prepare':'Speak')+'</div><div class="num" style="font-size:56px;line-height:1">'+tm(s.t0,s.dur)+'</div></div><div class="card"><div class="cue sm">'+esc(card.cue)+'</div></div>'+(s.ph==='prep'?'<textarea class="tarea" id="so-notes" data-i="sonotes" placeholder="Key words only" rows="3">'+esc(s.notes)+'</textarea><button class="btn pri block" data-a="sotalk">Start speaking now</button>':recorderWidgetHtml()+'<button class="btn block" data-a="sostop">I have finished</button>');
     else body=qCard(s,qs);
   }
   return '<div class="view col g16">'+topbar('Speaking Part '+s.part)+body+'</div>';
 };
 function qCard(s,qs){
   const last=s.qi>=qs.length-1;
-  return '<div class="card hero col g12"><div class="row between"><div class="eyebrow">Question '+(s.qi+1)+' of '+qs.length+'</div><span class="pill gold">'+tm(s.t0,s.part===1?30:45)+'</span></div><div class="t2" style="font-size:24px">'+esc(qs[s.qi])+'</div></div><div class="row g8"><button class="btn grow" data-a="soagain">Restart timer</button><button class="btn pri grow" data-a="sonext">'+(last?'Finish':'Next')+'</button></div>';
+  return '<div class="card hero col g12"><div class="row between"><div class="eyebrow">Question '+(s.qi+1)+' of '+qs.length+'</div><span class="pill gold">'+tm(s.t0,s.part===1?30:45)+'</span></div><div class="t2" style="font-size:24px">'+esc(qs[s.qi])+'</div></div>'+
+  recorderWidgetHtml()+
+  '<div class="row g8"><button class="btn grow" data-a="soagain">Restart timer</button><button class="btn pri grow" data-a="sonext">'+(last?'Finish':'Next')+'</button></div>';
 }
 A.sotopic=d=>{S.v.so.tid=d.v;render()};
 A.sostart=()=>{const s=S.v.so;s.t0=Date.now();s.qi=0;if(s.part===2){s.ph='prep';s.dur=60}else s.ph='q';render()};
 I.sonotes=v=>{S.v.so.notes=v};
 A.sotalk=()=>{const s=S.v.so;s.ph='talk';s.t0=Date.now();s.dur=120;render()};
-A.sostop=()=>{const s=S.v.so;s.ph='q';s.t0=Date.now();s.qi=0;render()};
-A.soagain=()=>{S.v.so.t0=Date.now();render()};
+A.sostop=()=>{resetVoiceRecord();const s=S.v.so;s.ph='q';s.t0=Date.now();s.qi=0;render()};
+A.soagain=()=>{resetVoiceRecord();S.v.so.t0=Date.now();render()};
 A.sonext=()=>{
+  resetVoiceRecord();
   const s=S.v.so,qs=s.part===1?P1T(s.tid).q:P2C(s.tid).p3;
   if(s.qi>=qs.length-1){const mins=Math.max(3,Math.round((Date.now()-s.start)/60000));S.v.so=null;S.stack.pop();rateSheet({sid:uid(),part:s.part,tid:s.tid,cand:S.uid,self:true,mins});return}
   s.qi++;s.t0=Date.now();render();
 };
+LEAVE.solo=()=>{resetVoiceRecord()};
 
 /* ----- live room ----- */
 A.livego=()=>{S.v.lv={role:'',st:null,notes:'',show:false,sid:uid()};push('live');lvPub()};
