@@ -425,7 +425,7 @@ window.addEventListener('beforeinstallprompt', e => {
   render();
 });
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  navigator.serviceWorker.register('./sw.js').then(r=>{r.update()}).catch(()=>{});
 }
 A.installApp = () => {
   if (_deferredPrompt) {
@@ -1168,9 +1168,10 @@ SCR.home=()=>{
   const left=plan.exam?diffDays(plan.exam,k):null;
   const rnd=seeded('sp'+k),topic=SP1[Math.floor(rnd()*SP1.length)],dq=topic.q[Math.floor(rnd()*topic.q.length)],dd=(m.daily||{})[k];
   const ms=members();
+  const pwaBanner=(_deferredPrompt?'<div class="pwa-banner row between"><div><div class="t3" style="font-size:13.5px">Install Aplikasi ke HP</div><div class="xs dim">Akses instan dari layar utama tanpa buka browser</div></div><button class="btn sm pri" data-a="installApp">'+ic('download',14)+' Install</button></div>':'');
   const hero=tasks.length?'<div class="card hero"><div class="row g16">'+ring(pct(done,tasks.length),78,8,done+'/'+tasks.length)+'<div class="grow"><div class="eyebrow">Day '+(pos.n+1)+' · Week '+(pos.w+1)+'</div><div class="t2" style="margin:5px 0 12px">'+(next?esc(next.t):'Everything done today')+'</div>'+(next?'<button class="btn pri sm" data-a="launch" data-id="'+next.id+'">Start '+ic('right',16)+'</button>':'<span class="pill ok">Nice work</span>')+'</div></div></div>'
     :'<div class="card hero"><div class="eyebrow">Plan</div><div class="t2" style="margin:6px 0 10px">'+(pos.n<0?'Your plan starts on '+planStart():'No tasks today')+'</div><button class="btn sm" data-a="nav" data-v="plan">Open plan</button></div>';
-  return '<div class="view col g16"><header><div class="eyebrow">'+date+'</div><h1 class="t1" style="margin-top:6px">'+g+',<br><em>'+esc(first(mname(S.uid)))+'</em></h1></header>'+install_btn_home+hero+
+  return '<div class="view col g16"><header><div class="eyebrow">'+date+'</div><h1 class="t1" style="margin-top:6px">'+g+',<br><em>'+esc(first(mname(S.uid)))+'</em></h1></header>'+pwaBanner+hero+
   '<div class="grid3"><div class="card soft tc" style="padding:14px 8px"><div class="num" style="font-size:30px;color:var(--gold)">'+st+'</div><div class="eyebrow">Day streak</div></div><div class="card soft tc" style="padding:14px 8px"><div class="num" style="font-size:30px">'+today+'</div><div class="eyebrow">Min today</div></div><div class="card soft tc" style="padding:14px 8px"><div class="num" style="font-size:30px">'+(left!==null&&left>=0?left:weekMinutes(m.days))+'</div><div class="eyebrow">'+(left!==null&&left>=0?'Days to exam':'Min this week')+'</div></div></div>'+
   (tasks.length?sec('Today’s plan','<button class="chip" data-a="nav" data-v="plan">Full plan</button>')+'<div class="card" style="padding:4px 16px"><div class="list">'+tasks.map(taskRow).join('')+'</div></div>':'')+
   sec('Study room')+'<div class="card">'+(ms.length?'<div class="col g16">'+ms.map(x=>'<div class="row g12">'+avatar(x.id)+'<div class="grow"><div class="t3">'+esc(mname(x.id))+(x.id===S.uid?' <span class="dim sm">you</span>':'')+'</div><div class="xs mut">'+Math.round((x.days||{})[k]||0)+' min today · '+streakOf(x.days)+' day streak</div></div>'+(((x.days||{})[k]||0)>0?pill('active','ok'):pill('not yet'))+'</div>').join('')+'</div>':emptyBox('No one has joined yet.'))+(ms.length<3?'<button class="btn ghost sm block mt16" data-a="invite">'+ic('plus',16)+' Invite member '+(ms.length+1)+'</button>':'')+'</div>'+
@@ -1184,6 +1185,7 @@ function taskRow(t,showOthers){
 A.dailyDone=()=>{save('members/'+S.uid,{daily:{[dkey()]:1}});addMinutes(1);toast('Logged. Keep talking tomorrow.')};
 A.invite=()=>{
   const ms=members();
+  const pwaBanner=(_deferredPrompt?'<div class="pwa-banner row between"><div><div class="t3" style="font-size:13.5px">Install Aplikasi ke HP</div><div class="xs dim">Akses instan dari layar utama tanpa buka browser</div></div><button class="btn sm pri" data-a="installApp">'+ic('download',14)+' Install</button></div>':'');
   const roomUrl=window.location.href.split('#')[0];
   const listHtml=ms.map(m=>'<div class="row between g12 card soft" style="padding:10px 14px">'+
     '<div class="row g12">'+avatar(m.id,'sm')+'<div><div class="t3" style="font-size:14px">'+esc(mname(m.id))+(m.id===S.uid?' <span class="pill ok sm" style="font-size:10px">Profil Aktif</span>':'')+'</div><div class="xs dim">Bergabung: '+new Date(m.joined||Date.now()).toLocaleDateString()+'</div></div></div>'+

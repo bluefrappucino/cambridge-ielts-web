@@ -1,38 +1,54 @@
 // Service Worker for Cambridge IELTS PWA
-const CACHE_NAME = 'ielts-pwa-v1';
+const CACHE_NAME = 'ielts-pwa-v2';
 const CORE_ASSETS = [
-  './',
-  './index.html',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './favicon.ico'
 ];
 
 self.addEventListener('install', e => {
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS)).catch(() => {})
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys => Promise.all(
-      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      keys.map(k => {
+        if (k !== CACHE_NAME) return caches.delete(k);
+      })
     )).then(() => clients.claim())
   );
 });
 
 self.addEventListener('fetch', e => {
-  // Only handle GET requests for same origin or relative paths
   if (e.request.method !== 'GET') return;
   
-  // For audio & pdf files, allow range requests / network first so streaming works properly
   const url = e.request.url;
+  // Pass-through audio and pdf
   if (url.includes('.mp3') || url.includes('.pdf')) {
-    return; // Pass through to browser default handler for smooth streaming
+    return;
   }
 
+  // Network-first for HTML pages so user always gets the latest code immediately
+  const isHtml = e.request.mode === 'navigate' || (e.request.headers.get('accept') && e.request.headers.get('accept').includes('text/html'));
+  if (isHtml) {
+    e.respondWith(
+      fetch(e.request).then(res => {
+        if (res && res.status === 200) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        }
+        return res;
+      }).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Cache-first for icons and static assets
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;
@@ -42,7 +58,7 @@ self.addEventListener('fetch', e => {
           caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
         }
         return res;
-      }).catch(() => caches.match('./index.html'));
+      });
     })
   );
 });
