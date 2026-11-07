@@ -162,7 +162,138 @@
   margin-bottom: 12px;
 }
 
-</style></head><body>
+
+/* Web Reader & CBT Rich Question Styling */
+.web-reader-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px 80px;
+  line-height: 1.75;
+  color: var(--text);
+  background: var(--surf);
+}
+.web-passage-heading {
+  font-family: var(--serif);
+  font-size: 1.5em;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0 0 16px;
+  line-height: 1.3;
+}
+.web-passage-content p {
+  margin: 0 0 16px;
+  color: #cfd6df;
+  letter-spacing: 0.01em;
+}
+.web-passage-content b {
+  color: #fff;
+}
+.q-card {
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  transition: border-color 0.15s ease;
+}
+.q-card:hover {
+  border-color: var(--line2);
+}
+.q-card.note-q {
+  background: var(--surf2);
+}
+.note-stem {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.note-lead {
+  color: var(--text);
+  font-weight: 500;
+}
+.note-trail {
+  color: var(--text);
+  opacity: 0.9;
+}
+.q-inline-inp {
+  min-width: 140px;
+  max-width: 240px;
+  height: 32px;
+  padding: 2px 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--surf);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  text-align: left;
+}
+.q-inline-inp:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(229,161,54,0.25);
+}
+.q-stem {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.mc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mc-opt-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--surf2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.mc-opt-row:hover {
+  background: var(--surf);
+  border-color: var(--gold);
+}
+.mc-opt-row.on {
+  background: rgba(229,161,54,0.12);
+  border-color: var(--gold);
+  color: var(--gold);
+  font-weight: 700;
+}
+.mc-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surf);
+  border: 1px solid var(--line2);
+  font-weight: 700;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.mc-opt-row.on .mc-badge {
+  background: var(--gold);
+  color: #111;
+  border-color: var(--gold);
+}
+.mc-label {
+  flex: 1;
+}
+</style>
+</head><body>
 <title>Meridian IELTS — Cambridge 19 & 20 Practice Suite</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
 <style>
@@ -320,6 +451,46 @@ a{color:var(--gold)}
 .opt.tf{font-family:var(--sans);font-size:12px;padding:0 10px}
 .ans-key{font:600 12.5px var(--mono);color:var(--ok);margin-top:5px}
 .why{font-size:12.5px;color:var(--fg2);margin-top:4px}
+.fc-view{max-width:560px;margin:0 auto;width:100%}
+.fc-wrap{perspective:1000px;width:100%}
+.fc-card{position:relative;min-height:360px;border-radius:24px;padding:36px 24px 28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(175deg,rgba(26,35,46,0.98),rgba(14,20,28,0.99));border:1px solid rgba(255,255,255,0.08);box-shadow:0 16px 40px rgba(0,0,0,0.45);cursor:pointer;animation:rise .25s ease-out;box-sizing:border-box}
+.fc-card-front{min-height:320px}
+.fc-pos{font-size:13px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:12px}
+.fc-word{font:400 42px/1.1 var(--serif);color:#ffffff;margin-bottom:14px;letter-spacing:-.5px}
+.fc-def{font-size:16px;line-height:1.45;color:rgba(255,255,255,0.88);max-width:32ch;margin:0 auto 16px;font-weight:400}
+.fc-example{font-style:italic;font-size:15px;line-height:1.5;color:rgba(255,255,255,0.68);max-width:36ch;margin:0 auto 16px}
+.fc-example .hl{background:rgba(229,190,125,0.18)!important;color:#e5be7d!important;border-radius:6px;padding:2px 8px;font-style:italic;font-weight:600;display:inline-block}
+.fc-trans-wrap{margin-bottom:12px}
+.fc-trans{display:inline-block;background:rgba(229,190,125,0.16);color:#e5be7d;border:1px solid rgba(229,190,125,0.28);font-size:13.5px;font-weight:600;padding:4px 18px;border-radius:999px;letter-spacing:.3px}
+.fc-colloc{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:12px;font-style:normal}
+.fc-audio-row{margin-top:4px}
+.fc-hear-btn{border-radius:999px;padding:6px 14px;font-size:12.5px;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.06)}
+.fc-hear-btn:hover{background:rgba(255,255,255,0.12);color:#fff}
+.fc-hint{font-size:12px;color:rgba(255,255,255,0.4);margin-top:16px}
+.srs-grade-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
+.srs-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1c2633;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px 4px;min-height:64px;cursor:pointer;transition:transform .12s,background .15s,box-shadow .15s;user-select:none;outline:none}
+.srs-btn:hover{background:#253344}
+.srs-btn:active{transform:scale(0.96)}
+.srs-btn .srs-title{font-size:15px;font-weight:700;color:#ffffff;line-height:1.2}
+.srs-btn .srs-sub{font-size:11.5px;color:rgba(255,255,255,0.55);font-weight:500;margin-top:4px;line-height:1}
+.srs-btn-good{background:#e5be7d!important;border-color:#e5be7d!important;box-shadow:0 4px 18px rgba(229,190,125,0.35)}
+.srs-btn-good:hover{background:#ecc88e!important}
+.srs-btn-good .srs-title{color:#171207!important;font-weight:800}
+.srs-btn-good .srs-sub{color:#4f3d17!important;font-weight:600}
+.srs-show-btn{min-height:52px;font-size:15px;font-weight:700;border-radius:14px}
+body.theme-light .fc-card{background:linear-gradient(175deg,#f8fafc,#edf2f7);border:1px solid rgba(0,0,0,0.08);box-shadow:0 12px 32px rgba(0,0,0,0.08)}
+body.theme-light .fc-pos{color:#64748b}
+body.theme-light .fc-word{color:#0f172a}
+body.theme-light .fc-def{color:#334155}
+body.theme-light .fc-example{color:#475569}
+body.theme-light .fc-colloc{color:#64748b}
+body.theme-light .fc-hear-btn{background:rgba(0,0,0,0.05);color:#334155}
+body.theme-light .fc-hint{color:#94a3b8}
+body.theme-light .srs-btn{background:#eef2f6;border-color:rgba(0,0,0,0.06)}
+body.theme-light .srs-btn:hover{background:#e2e8f0}
+body.theme-light .srs-btn .srs-title{color:#0f172a}
+body.theme-light .srs-btn .srs-sub{color:#64748b}
+body.theme-light .srs-btn-good{background:#dfb26b!important;border-color:#dfb26b!important}
 .fc{perspective:1000px;min-height:300px}
 .fc .face{min-height:300px;border-radius:26px;padding:26px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px;background:linear-gradient(160deg,var(--surf2),var(--surf));border:1px solid var(--line2);box-shadow:var(--shadow);cursor:pointer;animation:rise .3s}
 .fc .word{font:400 42px/1.05 var(--serif);color:var(--gold2)}
@@ -346,6 +517,7 @@ a{color:var(--gold)}
 
 </style>
 <div id="app"><div class="splash"><div class="t2">Meridian</div></div></div>
+<script src="cbt_data.js"></script>
 <script>
 /* core.js */
 'use strict';
@@ -1452,14 +1624,76 @@ function startRun(o){
 }
 let _sd=0;const saveDraft=()=>{clearTimeout(_sd);_sd=setTimeout(()=>{const r=S.run;if(r)ls.set('run_'+r.id,{ans:r.ans,t0:r.t0})},300)};
 const runQs=r=>r.parts.flatMap(p=>{const[a,b]=RANGE[r.m][p-1];return Array.from({length:b-a+1},(_,i)=>a+i)});
-function qRow(r,q,s){
-  const v=r.ans[q]||'',L=(s.type==='tfng'||s.type==='ynng')?null:(s.opts||'A-D').split('-');
+/* ----- rich CBT question helpers ----- */
+function getPrompt(bk, m, t, q) {
+  if (typeof CBT_DATA === 'undefined' || !CBT_DATA.prompts) return null;
+  const bp = CBT_DATA.prompts[bk];
+  if (!bp || !bp[m] || !bp[m][t]) return null;
+  return bp[m][t][q] || null;
+}
+
+function getPassage(bk, t, p) {
+  if (typeof CBT_DATA === 'undefined' || !CBT_DATA.passages) return null;
+  const bp = CBT_DATA.passages[bk];
+  if (!bp || !bp[t]) return null;
+  return bp[t][p] || null;
+}
+
+function qRow(r, q, s) {
+  const v = r.ans[q] || '';
+  const pr = getPrompt(r.bk, r.m, r.t, q);
+  const L = (s.type === 'tfng' || s.type === 'ynng') ? null : (s.opts || 'A-D').split('-');
+
+  // 1. If it's a fill-in-the-blank prompt with lead / trail text:
+  if (pr && pr.lead !== undefined) {
+    return '<div class="q-card note-q" id="q-sec-' + q + '">' +
+      '<div class="note-stem">' +
+        '<span class="qn">' + q + '</span> ' +
+        '<span class="note-lead">' + esc(pr.lead) + '</span> ' +
+        '<input class="inp q-inline-inp" id="q' + q + '" data-i="ans" data-n="' + q + '" value="' + esc(v) + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="jawaban ' + q + '">' +
+        (pr.trail ? ' <span class="note-trail">' + esc(pr.trail) + '</span>' : '') +
+      '</div>' +
+    '</div>';
+  }
+
+  // 2. If it's multiple choice with options text in pr:
+  if (pr && pr.opts && typeof pr.opts === 'object') {
+    const keys = Object.keys(pr.opts);
+    const optsHtml = keys.map(k =>
+      '<button class="mc-opt-row ' + (v === k ? 'on' : '') + '" data-a="pick" data-n="' + q + '" data-v="' + k + '">' +
+        '<span class="mc-badge">' + k + '</span>' +
+        '<span class="mc-label">' + esc(pr.opts[k]) + '</span>' +
+      '</button>'
+    ).join('');
+    return '<div class="q-card mc-q" id="q-sec-' + q + '">' +
+      '<div class="q-stem"><span class="qn">' + q + '</span> ' + esc(pr.text) + '</div>' +
+      '<div class="mc-list">' + optsHtml + '</div>' +
+    '</div>';
+  }
+
+  // 3. Fallback control rendering
   let ctl;
-  if(s.type==='mc'||s.type==='match'){const c0=L[0].charCodeAt(0),c1=L[L.length-1].charCodeAt(0);ctl='<div class="opts">'+Array.from({length:c1-c0+1},(_,i)=>String.fromCharCode(c0+i)).map(x=>'<button class="opt '+(v===x?'on':'')+'" data-a="pick" data-n="'+q+'" data-v="'+x+'" aria-label="'+x+'">'+x+'</button>').join('')+'</div>'}
-  else if(s.type==='head'){const[x0,x1]=(s.opts||'i-ix').split('-'),a=ROMAN.indexOf(x0),b=ROMAN.indexOf(x1);ctl='<div class="opts">'+ROMAN.slice(a,b+1).map(x=>'<button class="opt '+(v===x?'on':'')+'" data-a="pick" data-n="'+q+'" data-v="'+x+'" aria-label="Heading '+x+'">'+x+'</button>').join('')+'</div>'}
-  else if(s.type==='tfng'||s.type==='ynng'){const o=s.type==='tfng'?[['TRUE','True'],['FALSE','False'],['NOT GIVEN','Not given']]:[['YES','Yes'],['NO','No'],['NOT GIVEN','Not given']];ctl='<div class="opts">'+o.map(([x,l])=>'<button class="opt tf '+(v===x?'on':'')+'" data-a="pick" data-n="'+q+'" data-v="'+x+'">'+l+'</button>').join('')+'</div>'}
-  else ctl='<input class="inp" id="q'+q+'" data-i="ans" data-n="'+q+'" value="'+esc(v)+'" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="Answer '+q+'">';
-  return '<div class="q"><span class="qn">'+q+'</span><div class="grow">'+ctl+'</div></div>';
+  if (s.type === 'mc' || s.type === 'match') {
+    const c0 = L[0].charCodeAt(0), c1 = L[L.length - 1].charCodeAt(0);
+    ctl = '<div class="opts">' + Array.from({ length: c1 - c0 + 1 }, (_, i) => String.fromCharCode(c0 + i)).map(x => '<button class="opt ' + (v === x ? 'on' : '') + '" data-a="pick" data-n="' + q + '" data-v="' + x + '" aria-label="' + x + '">' + x + '</button>').join('') + '</div>';
+  } else if (s.type === 'head') {
+    const [x0, x1] = (s.opts || 'i-ix').split('-'), a = ROMAN.indexOf(x0), b = ROMAN.indexOf(x1);
+    ctl = '<div class="opts">' + ROMAN.slice(a, b + 1).map(x => '<button class="opt ' + (v === x ? 'on' : '') + '" data-a="pick" data-n="' + q + '" data-v="' + x + '" aria-label="Heading ' + x + '">' + x + '</button>').join('') + '</div>';
+  } else if (s.type === 'tfng' || s.type === 'ynng') {
+    const o = s.type === 'tfng' ? [['TRUE', 'True'], ['FALSE', 'False'], ['NOT GIVEN', 'Not given']] : [['YES', 'Yes'], ['NO', 'No'], ['NOT GIVEN', 'Not given']];
+    ctl = '<div class="opts">' + o.map(([x, l]) => '<button class="opt tf ' + (v === x ? 'on' : '') + '" data-a="pick" data-n="' + q + '" data-v="' + x + '">' + l + '</button>').join('') + '</div>';
+  } else {
+    ctl = '<input class="inp" id="q' + q + '" data-i="ans" data-n="' + q + '" value="' + esc(v) + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="Answer ' + q + '">';
+  }
+
+  if (pr && pr.text) {
+    return '<div class="q-card stmt-q" id="q-sec-' + q + '">' +
+      '<div class="q-stem"><span class="qn">' + q + '</span> ' + esc(pr.text) + '</div>' +
+      '<div class="q-ctl-row">' + ctl + '</div>' +
+    '</div>';
+  }
+
+  return '<div class="q" id="q-sec-' + q + '"><span class="qn">' + q + '</span><div class="grow">' + ctl + '</div></div>';
 }
 function playerHtml(r){
   const k=r.bk+'-'+r.t+'-'+r.ap,a=S.aud,chp=r.parts.length>1?chips(r.parts.map(p=>[p,'Part '+p]),'apart',r.ap):'';
@@ -1491,31 +1725,71 @@ function playerHtml(r){
 }
 
 function pdfPanelHtml(r){
-  const pdfInfo=PDF_MAP[r.bk];
-  if(!pdfInfo)return '';
-  const pDef=(pdfInfo[r.m]&&pdfInfo[r.m][r.t])||null;
-  let pChips='';
-  if(pDef&&typeof pDef==='object'){
-    const prefix=r.m==='R'?'Passage ':'Part ';
-    pChips=r.parts.map(p=>{
-      const pg=pDef[p]||'';
-      return '<button class="chip xs '+(r.ap===p?'on':'')+'" data-a="jumpPartPage" data-p="'+p+'" data-page="'+pg+'">'+prefix+p+(pg?' (p.'+pg+')':'')+'</button>';
+  const isReading = r.m === 'R';
+  const hasPassage = isReading && !!getPassage(r.bk, r.t, r.ap);
+  const readerMode = r.readerMode || (hasPassage ? 'web' : 'pdf');
+
+  const pdfInfo = PDF_MAP[r.bk];
+  const pDef = (pdfInfo && pdfInfo[r.m] && pdfInfo[r.m][r.t]) || null;
+  let pChips = '';
+  if (pDef && typeof pDef === 'object') {
+    const prefix = r.m === 'R' ? 'Passage ' : 'Part ';
+    pChips = r.parts.map(p => {
+      const pg = pDef[p] || '';
+      return '<button class="chip xs ' + (r.ap === p ? 'on' : '') + '" data-a="jumpPartPage" data-p="' + p + '" data-page="' + pg + '">' + prefix + p + (pg ? ' (p.' + pg + ')' : '') + '</button>';
     }).join('');
   }
-  const pdfUrl=getPdfUrl(r.bk, r.pdfPage||1);
-  return '<div class="pdf-panel '+(r.mobView==='doc'?'mob-full':'')+'">'+
-    '<div class="pdf-toolbar">'+
-      '<div class="pdf-title"><span class="ico">'+ic('book',16)+'</span> '+esc(pdfInfo.title)+(r.pdfPage?' · p.'+r.pdfPage:'')+'</div>'+
-      '<div class="pdf-controls">'+
-        pChips+
-        '<button class="btn xs ghost" data-a="popPdf" title="Buka PDF di jendela baru"><span class="ico">'+ic('external',14)+'</span> Pop-out</button>'+
-        (r.mobView==='doc'?'<button class="btn xs pri" data-a="mobView" data-v="ans">Lembar Jawaban</button>':'')+
-        '<button class="btn xs ghost" data-a="togglePdf" title="Tutup PDF">'+ic('x',14)+'</button>'+
-      '</div>'+
-    '</div>'+
-    '<iframe id="pdf-frame" class="pdf-frame" src="'+pdfUrl+'" title="Cambridge IELTS PDF"></iframe>'+
+
+  // Web Reader for Reading Passages
+  if (isReading && readerMode === 'web' && hasPassage) {
+    const pas = getPassage(r.bk, r.t, r.ap);
+    const scale = S.fontScale || 15;
+    return '<div class="pdf-panel ' + (r.mobView === 'doc' ? 'mob-full' : '') + '">' +
+      '<div class="pdf-toolbar">' +
+        '<div class="pdf-title"><span class="ico">' + ic('book', 16) + '</span> ' + esc(pas.title) + '</div>' +
+        '<div class="pdf-controls">' +
+          pChips +
+          '<div class="seg" style="display:inline-flex;margin:0 2px">' +
+            '<button class="view-tab-btn on" style="padding:2px 8px;font-size:11px">Teks Web</button>' +
+            '<button class="view-tab-btn" data-a="setReaderMode" data-v="pdf" style="padding:2px 8px;font-size:11px">PDF Buku</button>' +
+          '</div>' +
+          '<button class="chip xs" data-a="fontScale" data-v="down" title="Kecilkan teks">A-</button>' +
+          '<button class="chip xs" data-a="fontScale" data-v="up" title="Besarkan teks">A+</button>' +
+          (r.mobView === 'doc' ? '<button class="btn xs pri" data-a="mobView" data-v="ans">Lembar Soal</button>' : '') +
+          '<button class="btn xs ghost" data-a="togglePdf" title="Tutup Bacaan">' + ic('x', 14) + '</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="web-reader-body" style="font-size:' + scale + 'px">' +
+        '<h2 class="web-passage-heading">' + esc(pas.title) + '</h2>' +
+        '<div class="web-passage-content">' +
+          pas.paragraphs.map(p => '<p>' + p + '</p>').join('') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // PDF Viewer
+  if (!pdfInfo) return '';
+  const pdfUrl = getPdfUrl(r.bk, r.pdfPage || 1);
+  return '<div class="pdf-panel ' + (r.mobView === 'doc' ? 'mob-full' : '') + '">' +
+    '<div class="pdf-toolbar">' +
+      '<div class="pdf-title"><span class="ico">' + ic('book', 16) + '</span> ' + esc(pdfInfo.title) + (r.pdfPage ? ' · p.' + r.pdfPage : '') + '</div>' +
+      '<div class="pdf-controls">' +
+        pChips +
+        (hasPassage ?
+          '<div class="seg" style="display:inline-flex;margin:0 2px">' +
+            '<button class="view-tab-btn" data-a="setReaderMode" data-v="web" style="padding:2px 8px;font-size:11px">Teks Web</button>' +
+            '<button class="view-tab-btn on" style="padding:2px 8px;font-size:11px">PDF Buku</button>' +
+          '</div>' : '') +
+        '<button class="btn xs ghost" data-a="popPdf" title="Buka PDF di jendela baru"><span class="ico">' + ic('external', 14) + '</span> Pop-out</button>' +
+        (r.mobView === 'doc' ? '<button class="btn xs pri" data-a="mobView" data-v="ans">Lembar Soal</button>' : '') +
+        '<button class="btn xs ghost" data-a="togglePdf" title="Tutup PDF">' + ic('x', 14) + '</button>' +
+      '</div>' +
+    '</div>' +
+    '<iframe id="pdf-frame" class="pdf-frame" src="' + pdfUrl + '" title="Cambridge IELTS PDF"></iframe>' +
   '</div>';
 }
+
 
 SCR.run=()=>{
   const r=S.run;if(!r)return '<div class="view">'+topbar('Test')+emptyBox('Nothing running.')+'</div>';
@@ -1682,6 +1956,12 @@ A.resetTimer=()=>{
   toast('Waktu tes direset ke 00:00');
 };
 A.switchC19=()=>{if(S.run){S.run.bk='c19';loadAudio();render()}};
+A.setReaderMode=d=>{if(S.run){S.run.readerMode=d.v;render()}};
+A.fontScale=d=>{
+  S.fontScale = Math.max(12, Math.min(22, (S.fontScale || 15) + (d.v === 'up' ? 1 : -1)));
+  render();
+};
+
 A.apart=d=>{
   if(!S.run)return;
   S.run.ap=+d.v;
@@ -1886,10 +2166,48 @@ SCR.flash=()=>{
   if(f.fin)return '<div class="view col g16">'+topbar('Session complete')+'<div class="card hero tc col g8"><div class="t1">'+f.done+'<span class="dim" style="font-size:22px"> cards</span></div><p class="sm mut" style="margin:0">Reviewed in '+Math.max(1,Math.round((Date.now()-f.t0)/60000))+' min. Cards you missed will return today.</p></div><button class="btn pri block" data-a="vfinish">Done</button></div>';
   const w=wById(f.q[f.i]);if(!w){f.fin=true;return SCR.flash()}
   const c=cardOf(w.id);
-  const face=f.flip?'<div class="face" data-a="vflip"><div class="eyebrow">'+esc(w.p)+'</div><div class="t2">'+esc(w.w)+'</div><div class="sm" style="max-width:30ch">'+esc(w.d)+'</div><div class="mut sm" style="max-width:34ch;font-style:italic">'+(w.e?hl(w.e,w.w):'')+'</div>'+(w.i?'<div class="pill gold">'+esc(w.i)+'</div>':'')+(w.c?'<div class="xs dim">'+esc(w.c)+'</div>':'')+'</div>'
-   :'<div class="face" data-a="vflip"><div class="eyebrow">'+(c?'review':'new word')+' \u00b7 '+esc(posN(w.p))+'</div><div class="word">'+esc(w.w)+'</div><button class="btn sm ghost" data-a="say" data-w="'+esc(w.w)+'" aria-label="Hear it">'+ic('speaker',18)+' Hear</button><div class="xs dim">Tap to reveal</div></div>';
-  return '<div class="view col g16">'+topbar(f.done+' of '+f.q.length,'<span class="xs mut mono">'+VOCAB.length+' words</span>')+bar(pct(f.done,f.q.length))+'<div class="fc" data-k="fc-'+f.i+'-'+f.done+'">'+face+'</div>'+
-  (f.flip?'<div class="grade">'+['Again','Hard','Good','Easy'].map((l,g)=>'<button class="btn '+(g===2?'pri':'')+'" data-a="vgrade" data-g="'+g+'">'+l+'<small>'+ivLabel(nextIv(c,g).iv)+'</small></button>').join('')+'</div>':'<button class="btn pri block" data-a="vflip">Show answer</button>')+'</div>';
+  const posUpper=(w.p||'n').toUpperCase();
+  const face=f.flip?
+    '<div class="fc-card" data-a="vflip">'+
+      '<div class="fc-pos">'+esc(posUpper)+'</div>'+
+      '<div class="fc-word">'+esc(w.w)+'</div>'+
+      '<div class="fc-def">'+esc(w.d)+'</div>'+
+      (w.e?'<div class="fc-example">'+hl(w.e,w.w)+'</div>':'')+
+      (w.i?'<div class="fc-trans-wrap"><span class="fc-trans">'+esc(w.i)+'</span></div>':'')+
+      (w.c?'<div class="fc-colloc">'+esc(w.c)+'</div>':'')+
+      '<div class="fc-audio-row"><button class="btn xs ghost fc-hear-btn" data-a="say" data-w="'+esc(w.w)+'" aria-label="Hear pronunciation"><span class="ico">'+ic('speaker',15)+'</span> Hear</button></div>'+
+    '</div>'
+   :
+    '<div class="fc-card fc-card-front" data-a="vflip">'+
+      '<div class="fc-pos">'+esc(posUpper)+'</div>'+
+      '<div class="fc-word">'+esc(w.w)+'</div>'+
+      '<div class="fc-audio-row"><button class="btn xs ghost fc-hear-btn" data-a="say" data-w="'+esc(w.w)+'" aria-label="Hear pronunciation"><span class="ico">'+ic('speaker',15)+'</span> Hear</button></div>'+
+      '<div class="fc-hint">Tap card or button to reveal</div>'+
+    '</div>';
+
+  const srsButtons=[
+    {label:'Again',g:0},
+    {label:'Hard',g:1},
+    {label:'Good',g:2,good:true},
+    {label:'Easy',g:3}
+  ].map(b=>{
+    const iv=nextIv(c,b.g).iv;
+    return '<button class="srs-btn '+(b.good?'srs-btn-good':'')+'" data-a="vgrade" data-g="'+b.g+'">'+
+      '<span class="srs-title">'+b.label+'</span>'+
+      '<span class="srs-sub">'+ivLabel(iv)+'</span>'+
+    '</button>';
+  }).join('');
+
+  return '<div class="view col g16 fc-view">'+
+    topbar(f.done+' of '+f.q.length,'<span class="xs mut mono">'+VOCAB.length+' words</span>')+
+    bar(pct(f.done,f.q.length))+
+    '<div class="fc-wrap" data-k="fc-'+f.i+'-'+f.done+'">'+face+'</div>'+
+    (f.flip?
+      '<div class="srs-grade-bar">'+srsButtons+'</div>'
+      :
+      '<button class="btn pri block srs-show-btn" data-a="vflip">Show answer</button>'
+    )+
+  '</div>';
 };
 A.vflip=()=>{S.v.fc.flip=true;render()};
 A.vgrade=d=>{
