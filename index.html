@@ -292,6 +292,329 @@
 .mc-label {
   flex: 1;
 }
+
+/* ===== MOBILE ERGONOMICS & MINIMALIST TEST LAYOUT ===== */
+.part-container { margin-bottom: 20px; }
+.part-container.active-part { }
+
+/* Compact Sticky Audio Bar (52px height) */
+.player-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  position: sticky;
+  top: 8px;
+  z-index: 20;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+  margin-bottom: 10px;
+}
+.part-tab-chip {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  font-size: 11px;
+  line-height: 18px;
+  border-radius: 4px;
+  background: var(--surf);
+  color: var(--mut);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.part-tab-chip.cur {
+  background: var(--gold);
+  color: #111;
+  font-weight: 700;
+  border-color: var(--gold);
+}
+.player-play-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #111;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.player-play-btn:active { transform: scale(0.92); }
+.player-bar.playing .player-play-btn {
+  box-shadow: 0 0 14px rgba(212,175,55,0.45);
+}
+.player-center {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.part-badge {
+  font-weight: 700;
+  color: var(--gold);
+  font-size: 11px;
+  background: rgba(212,175,55,0.12);
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.part-tab-chip {
+  font-size: 10.5px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--surf);
+  color: var(--mut);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.part-tab-chip.cur {
+  background: var(--gold);
+  color: #111;
+  font-weight: 700;
+  border-color: var(--gold);
+}
+.time-badge {
+  font-size: 11px;
+  color: var(--mut);
+  white-space: nowrap;
+}
+.scrub-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.scrub.slim {
+  height: 4px;
+  margin: 1px 0;
+  accent-color: var(--gold);
+}
+.aud-btn {
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+  min-height: 28px !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--surf) !important;
+  color: var(--text) !important;
+  white-space: nowrap;
+}
+.aud-speed { min-width: 32px; font-weight: 600; }
+
+/* Inline Running Text for Note Completion (No 3-line breaks) */
+.q-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: var(--card);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.q-card.is-ok {
+  border-color: rgba(48,209,88,0.4);
+  background: rgba(48,209,88,0.04);
+}
+.q-card.is-err {
+  border-color: rgba(255,69,58,0.4);
+  background: rgba(255,69,58,0.04);
+}
+.note-stem {
+  display: block !important;
+  line-height: 2.3 !important;
+  font-size: 14.5px !important;
+  color: var(--text) !important;
+  text-align: left !important;
+}
+.note-lead, .note-trail {
+  display: inline !important;
+  font-weight: 500 !important;
+  color: var(--text) !important;
+  vertical-align: baseline !important;
+}
+.q-inline-inp {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  width: 95px !important;
+  min-width: 65px !important;
+  max-width: 125px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  margin: 0 4px !important;
+  padding: 1px 6px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  font-family: inherit !important;
+  text-align: center !important;
+  border-radius: 6px !important;
+  border: 1.5px solid var(--border) !important;
+  background: var(--surf) !important;
+  color: var(--gold) !important;
+  transition: all 0.15s ease !important;
+}
+.q-inline-inp:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 2px rgba(212,175,55,0.25) !important;
+  outline: none !important;
+}
+.q-inline-inp.inp-ok {
+  border-color: #30d158 !important;
+  background: rgba(48,209,88,0.12) !important;
+  color: #30d158 !important;
+}
+.q-inline-inp.inp-err {
+  border-color: #ff453a !important;
+  background: rgba(255,69,58,0.12) !important;
+  color: #ff453a !important;
+}
+.qn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 22px !important;
+  height: 22px !important;
+  padding: 0 4px !important;
+  margin-right: 6px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  border-radius: 4px !important;
+  background: rgba(255,255,255,0.08) !important;
+  color: var(--mut) !important;
+  vertical-align: middle !important;
+}
+.qn.ok {
+  background: rgba(48,209,88,0.2) !important;
+  color: #30d158 !important;
+}
+.qn.err {
+  background: rgba(255,69,58,0.2) !important;
+  color: #ff453a !important;
+}
+.inline-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11.5px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.inline-tag.tag-ok {
+  background: rgba(48,209,88,0.15);
+  color: #30d158;
+}
+.inline-tag.tag-err {
+  background: rgba(255,69,58,0.15);
+  color: #ff453a;
+}
+.mc-opt-row.key-correct {
+  border-color: #30d158 !important;
+  background: rgba(48,209,88,0.15) !important;
+}
+.mc-opt-row.key-wrong {
+  border-color: #ff453a !important;
+  background: rgba(255,69,58,0.15) !important;
+}
+
+/* Interactive Audioscript Sheet Drawer */
+.transcript-drawer-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.68);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  animation: drawerFadeIn 0.2s ease;
+}
+.transcript-drawer-content {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 18px 18px 0 0;
+  width: 100%;
+  max-width: 680px;
+  height: 82vh;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  animation: drawerSlideUp 0.25s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+}
+.transcript-drawer-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.transcript-drawer-body {
+  padding: 16px 18px 36px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.dialogue-turn {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dialogue-speaker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+.dialogue-speech {
+  margin: 0;
+  color: var(--text);
+}
+.dialogue-speech.solo {
+  margin-bottom: 12px;
+}
+@keyframes drawerSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes drawerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Review Table in Results Screen */
+.review-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.review-item:last-child { border-bottom: none; }
+.review-qn {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.review-qn.ok { background: rgba(48,209,88,0.18); color: #30d158; }
+.review-qn.err { background: rgba(255,69,58,0.18); color: #ff453a; }
+.review-body { flex: 1; min-width: 0; font-size: 13.5px; }
+.review-ans-y { color: var(--mut); font-size: 12px; margin-bottom: 2px; }
+.review-ans-k { color: var(--gold); font-weight: 600; font-size: 13.5px; }
+
 </style>
 </head><body>
 <title>Meridian IELTS — Cambridge 19 & 20 Practice Suite</title>
@@ -630,35 +953,79 @@ function wire(){
 }
 
 /* ===== navigation ===== */
-function go(tab){S.tab=tab;S.stack=[];S.sheet=null;S.scroll=true;try{if(location.hash.slice(1)!==tab)history.replaceState(null,'','#'+tab)}catch{}render()}
-function push(n,p={}){S.stack.push({n,p});S.sheet=null;S.scroll=true;render()}
-function pop(){S.stack.pop();S.sheet=null;S.scroll=true;render()}
+function go(tab){
+  S.tab=tab;S.stack=[];S.sheet=null;S.scroll=true;
+  try{if(location.hash.slice(1)!==tab)history.replaceState({screen:tab,depth:0},'','#'+tab)}catch{}
+  render();
+}
+function push(n,p={}){
+  S.stack.push({n,p});S.sheet=null;S.scroll=true;
+  try{history.pushState({screen:n,depth:S.stack.length},'')}catch{}
+  render();
+}
+function pop(){
+  const t=S.stack.pop();
+  if(t&&t.n==='run'&&AUDIO)AUDIO.pause();
+  S.sheet=null;S.scroll=true;
+  render();
+}
 function curScr(){return S.stack[S.stack.length-1]||null}
-function sheet(html){S.sheet=html;render()}
+function sheet(html){
+  S.sheet=html;
+  try{history.pushState({modal:true,depth:S.stack.length+1},'')}catch{}
+  render();
+}
 let _tt=0;
 function toast(m){S.toast=m;render();clearTimeout(_tt);_tt=setTimeout(()=>{S.toast=null;render()},2600)}
-A.nav=d=>go(d.v);A.back=()=>{
+A.nav=d=>go(d.v);
+A.back=()=>{
+  if(S.sheet){
+    S.sheet=null;
+    try{history.back()}catch{render()}
+    return;
+  }
+  if(S.run&&S.run.showTranscriptModal){
+    S.run.showTranscriptModal=false;
+    try{history.back()}catch{render()}
+    return;
+  }
+  if(S.run&&S.run.mobView==='doc'){
+    S.run.mobView='ans';
+    try{history.back()}catch{render()}
+    return;
+  }
   const t=curScr();
   if(t&&t.n==='run'){
     AUDIO.pause();clearTimeout(_sd);
-    if(S.run)ls.set('run_'+S.run.id,{ans:S.run.ans,t0:S.run.t0});
+    if(S.run)ls.set('run_'+S.run.id,{ans:S.run.ans,t0:S.run.t0,pdfPage:S.run.pdfPage,mobView:S.run.mobView});
   }
-  if(window.history.state&&window.history.state.depth){
-    window.history.back();
+  if(S.stack.length>0){
+    try{history.back()}catch{pop()}
   }else{
-    pop();
+    go('home');
   }
 };
 window.addEventListener('popstate',e=>{
   if(S.sheet){S.sheet=null;render();return}
+  if(S.run&&S.run.showTranscriptModal){
+    S.run.showTranscriptModal=false;render();return;
+  }
+  if(S.run&&S.run.mobView==='doc'){
+    S.run.mobView='ans';render();return;
+  }
   if(S.stack.length>0){
     const t=curScr();
     if(t&&t.n==='run'&&AUDIO)AUDIO.pause();
     S.stack.pop();
     render();
+  }else{
+    go('home');
   }
 });
-A.closeSheet=()=>{S.sheet=null;render()};
+A.closeSheet=()=>{
+  S.sheet=null;
+  try{history.back()}catch{render()}
+};
 A.noop=()=>{};
 
 /* ===== grading helpers ===== */
@@ -1639,34 +2006,135 @@ function getPassage(bk, t, p) {
   return bp[t][p] || null;
 }
 
+
+/* ===== CBT Audioscript & Drawer Helpers ===== */
+function formatAudioscript(raw) {
+  if (!raw) return '<p class="mut tc" style="padding:40px 0">Naskah audio tidak tersedia untuk bagian ini.</p>';
+  const lines = raw.split('\n');
+  let html = '', curSpeaker = '', curSpeech = [];
+  const flush = () => {
+    if (curSpeech.length) {
+      const speech = curSpeech.join(' ').trim();
+      if (curSpeaker) {
+        html += '<div class="dialogue-turn"><span class="dialogue-speaker">' + esc(curSpeaker) + '</span><p class="dialogue-speech">' + esc(speech) + '</p></div>';
+      } else {
+        html += '<p class="dialogue-speech solo">' + esc(speech) + '</p>';
+      }
+      curSpeech = [];
+    }
+  };
+  for (let l of lines) {
+    l = l.trim();
+    if (!l) continue;
+    const spkMatch = l.match(/^([A-Z\s]{2,16}):\s*(.*)$/);
+    if (spkMatch) {
+      flush();
+      curSpeaker = spkMatch[1].trim();
+      if (spkMatch[2]) curSpeech.push(spkMatch[2].trim());
+    } else {
+      curSpeech.push(l);
+    }
+  }
+  flush();
+  return html;
+}
+
+function transcriptDrawerHtml(r) {
+  if (!r || !r.showTranscriptModal) return '';
+  const audData = (typeof CBT_DATA !== 'undefined' && CBT_DATA.audioscripts && CBT_DATA.audioscripts[r.bk] && CBT_DATA.audioscripts[r.bk][r.t]) ? CBT_DATA.audioscripts[r.bk][r.t][r.ap] : '';
+  const bTitle = BOOKS[r.bk] ? BOOKS[r.bk].s : r.bk.toUpperCase();
+  return '<div class="transcript-drawer-scrim" data-a="closeTranscript">' +
+    '<div class="transcript-drawer-content" onclick="event.stopPropagation()">' +
+      '<div class="transcript-drawer-header row between">' +
+        '<div><div class="t3">Transcript Audio - Part ' + r.ap + '</div><div class="xs dim">' + bTitle + ' Test ' + r.t + ' Part ' + r.ap + '</div></div>' +
+        '<button class="btn ico sm ghost" data-a="closeTranscript" title="Tutup Naskah">X</button>' +
+      '</div>' +
+      '<div class="transcript-drawer-body">' +
+        formatAudioscript(audData) +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+A.openTranscript = () => {
+  if (!S.run) return;
+  S.run.showTranscriptModal = true;
+  try { history.pushState({ transcript: true, depth: S.stack.length + 1 }, ''); } catch(e) {}
+  render();
+};
+A.closeTranscript = () => {
+  if (!S.run) return;
+  S.run.showTranscriptModal = false;
+  try { history.back(); } catch(e) { render(); }
+};
+A.checkNow = () => {
+  if (!S.run) return;
+  const r = S.run, key = getKey(r.bk, r.t, r.m);
+  r.checked = !r.checked;
+  if (r.checked && key) {
+    const qs = runQs(r);
+    let okCount = 0, ansCount = 0;
+    qs.forEach(q => {
+      const v = r.ans[q];
+      if (v && String(v).trim()) {
+        ansCount++;
+        if (key.a[q] && gradeOne(v, key.a[q]).ok) okCount++;
+      }
+    });
+    toast('Kunci ditampilkan. Benar: ' + okCount + ' dari ' + ansCount + ' yang terisi.');
+  }
+  render();
+};
+
 function qRow(r, q, s) {
   const v = r.ans[q] || '';
   const pr = getPrompt(r.bk, r.m, r.t, q);
   const L = (s.type === 'tfng' || s.type === 'ynng') ? null : (s.opts || 'A-D').split('-');
 
-  // 1. If it's a fill-in-the-blank prompt with lead / trail text:
+  // Grading check state
+  const key = (r.checked || r.graded) ? getKey(r.bk, r.t, r.m) : null;
+  const ansKey = (key && key.a && key.a[q]) ? key.a[q] : null;
+  const gRes = (r.checked && ansKey) ? gradeOne(v, ansKey) : null;
+
+  const cardStatus = gRes ? (gRes.ok ? 'is-ok' : (gRes.blank ? '' : 'is-err')) : '';
+  const qnClass = gRes ? (gRes.ok ? 'ok' : (gRes.blank ? '' : 'err')) : '';
+  const inpClass = gRes ? (gRes.ok ? 'inp-ok' : (gRes.blank ? '' : 'inp-err')) : '';
+  const tagHtml = gRes ? (gRes.ok ? '<span class="inline-tag tag-ok">Benar</span>' : (!gRes.blank ? '<span class="inline-tag tag-err">Kunci: ' + esc(ansKey.join(' / ')) + '</span>' : '<span class="inline-tag tag-err">Kosong (' + esc(ansKey.join(' / ')) + ')</span>')) : '';
+
+  // 1. Fill-in-the-blank prompt with natural inline running text:
   if (pr && pr.lead !== undefined) {
-    return '<div class="q-card note-q" id="q-sec-' + q + '">' +
+    return '<div class="q-card note-q ' + cardStatus + '" id="q-sec-' + q + '">' +
       '<div class="note-stem">' +
-        '<span class="qn">' + q + '</span> ' +
+        '<span class="qn ' + qnClass + '">' + q + '</span>' +
         '<span class="note-lead">' + esc(pr.lead) + '</span> ' +
-        '<input class="inp q-inline-inp" id="q' + q + '" data-i="ans" data-n="' + q + '" value="' + esc(v) + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="jawaban ' + q + '">' +
+        '<input class="inp q-inline-inp ' + inpClass + '" id="q' + q + '" data-i="ans" data-n="' + q + '" value="' + esc(v) + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next">' +
         (pr.trail ? ' <span class="note-trail">' + esc(pr.trail) + '</span>' : '') +
+        tagHtml +
       '</div>' +
     '</div>';
   }
 
-  // 2. If it's multiple choice with options text in pr:
+  // 2. Multiple choice with options text in pr:
   if (pr && pr.opts && typeof pr.opts === 'object') {
     const keys = Object.keys(pr.opts);
-    const optsHtml = keys.map(k =>
-      '<button class="mc-opt-row ' + (v === k ? 'on' : '') + '" data-a="pick" data-n="' + q + '" data-v="' + k + '">' +
+    const optsHtml = keys.map(k => {
+      let optCls = '';
+      if (v === k) optCls += ' on';
+      if (r.checked && ansKey) {
+        const isTarget = ansKey.includes(k);
+        if (v === k) {
+          optCls += isTarget ? ' key-correct' : ' key-wrong';
+        } else if (isTarget) {
+          optCls += ' key-correct';
+        }
+      }
+      return '<button class="mc-opt-row' + optCls + '" data-a="pick" data-n="' + q + '" data-v="' + k + '">' +
         '<span class="mc-badge">' + k + '</span>' +
         '<span class="mc-label">' + esc(pr.opts[k]) + '</span>' +
-      '</button>'
-    ).join('');
-    return '<div class="q-card mc-q" id="q-sec-' + q + '">' +
-      '<div class="q-stem"><span class="qn">' + q + '</span> ' + esc(pr.text) + '</div>' +
+      '</button>';
+    }).join('');
+    return '<div class="q-card mc-q ' + cardStatus + '" id="q-sec-' + q + '">' +
+      '<div class="q-stem"><span class="qn ' + qnClass + '">' + q + '</span> ' + esc(pr.text) + tagHtml + '</div>' +
       '<div class="mc-list">' + optsHtml + '</div>' +
     '</div>';
   }
@@ -1675,7 +2143,14 @@ function qRow(r, q, s) {
   let ctl;
   if (s.type === 'mc' || s.type === 'match') {
     const c0 = L[0].charCodeAt(0), c1 = L[L.length - 1].charCodeAt(0);
-    ctl = '<div class="opts">' + Array.from({ length: c1 - c0 + 1 }, (_, i) => String.fromCharCode(c0 + i)).map(x => '<button class="opt ' + (v === x ? 'on' : '') + '" data-a="pick" data-n="' + q + '" data-v="' + x + '" aria-label="' + x + '">' + x + '</button>').join('') + '</div>';
+    ctl = '<div class="opts">' + Array.from({ length: c1 - c0 + 1 }, (_, i) => String.fromCharCode(c0 + i)).map(x => {
+      let oCls = (v === x ? 'on' : '');
+      if (r.checked && ansKey) {
+        if (v === x) oCls += (ansKey.includes(x) ? ' key-correct' : ' key-wrong');
+        else if (ansKey.includes(x)) oCls += ' key-correct';
+      }
+      return '<button class="opt ' + oCls + '" data-a="pick" data-n="' + q + '" data-v="' + x + '" aria-label="' + x + '">' + x + '</button>';
+    }).join('') + '</div>';
   } else if (s.type === 'head') {
     const [x0, x1] = (s.opts || 'i-ix').split('-'), a = ROMAN.indexOf(x0), b = ROMAN.indexOf(x1);
     ctl = '<div class="opts">' + ROMAN.slice(a, b + 1).map(x => '<button class="opt ' + (v === x ? 'on' : '') + '" data-a="pick" data-n="' + q + '" data-v="' + x + '" aria-label="Heading ' + x + '">' + x + '</button>').join('') + '</div>';
@@ -1683,44 +2158,52 @@ function qRow(r, q, s) {
     const o = s.type === 'tfng' ? [['TRUE', 'True'], ['FALSE', 'False'], ['NOT GIVEN', 'Not given']] : [['YES', 'Yes'], ['NO', 'No'], ['NOT GIVEN', 'Not given']];
     ctl = '<div class="opts">' + o.map(([x, l]) => '<button class="opt tf ' + (v === x ? 'on' : '') + '" data-a="pick" data-n="' + q + '" data-v="' + x + '">' + l + '</button>').join('') + '</div>';
   } else {
-    ctl = '<input class="inp" id="q' + q + '" data-i="ans" data-n="' + q + '" value="' + esc(v) + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="Answer ' + q + '">';
+    ctl = '<input class="inp ' + inpClass + '" id="q' + q + '" data-i="ans" data-n="' + q + '" value="' + esc(v) + '" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="Answer ' + q + '">';
   }
 
   if (pr && pr.text) {
-    return '<div class="q-card stmt-q" id="q-sec-' + q + '">' +
-      '<div class="q-stem"><span class="qn">' + q + '</span> ' + esc(pr.text) + '</div>' +
+    return '<div class="q-card stmt-q ' + cardStatus + '" id="q-sec-' + q + '">' +
+      '<div class="q-stem"><span class="qn ' + qnClass + '">' + q + '</span> ' + esc(pr.text) + tagHtml + '</div>' +
       '<div class="q-ctl-row">' + ctl + '</div>' +
     '</div>';
   }
 
-  return '<div class="q" id="q-sec-' + q + '"><span class="qn">' + q + '</span><div class="grow">' + ctl + '</div></div>';
+  return '<div class="q ' + cardStatus + '" id="q-sec-' + q + '"><span class="qn ' + qnClass + '">' + q + '</span><div class="grow">' + ctl + '</div>' + tagHtml + '</div>';
 }
-function playerHtml(r){
-  const k=r.bk+'-'+r.t+'-'+r.ap,a=S.aud,chp=r.parts.length>1?chips(r.parts.map(p=>[p,'Part '+p]),'apart',r.ap):'';
-  const qRangeText = r.ap===1?'1 – 10':r.ap===2?'11 – 20':r.ap===3?'21 – 30':'31 – 40';
-  const scriptP = (AUDIOSCRIPT_PAGES[r.t]&&AUDIOSCRIPT_PAGES[r.t][r.ap]) || 99;
-  if(!hasAudio(k)){
-  const isC20 = r.bk === 'c20';
-  return '<div class="card soft col g8">'+chp+'<div class="row g12"><span class="ico">'+ic('wave')+'</span><div class="grow sm">'+
-    (isC20 ? 'Audio bawaan tersedia lengkap di <b>Cambridge 19</b>. Untuk Cambridge 20 kamu bisa import file mp3 sendiri atau kembali dan pilih Cambridge 19.' : 'No audio found for '+PARTN.L[r.ap-1]+'. Import mp3 file or check audio folder.')+
-    '</div>'+
-    (isC20 ? '<button class="btn sm pri" data-a="switchC19">Pindah ke Cambridge 19</button>' : '<button class="btn sm" data-a="audioLib">Import</button>')+
-  '</div></div>';
-}
-  const dur=a.dur||0,cur=a.cur||0;
-  return '<div class="player col g8 '+(a.playing?'playing':'')+'">'+chp+
-  '<div class="row between card soft" style="padding:6px 10px;font-size:12px;margin:-2px 0">'+
-    '<span class="row g8"><span class="pill ok sm">Part '+r.ap+'</span><span class="dim">Memutar soal <b>'+qRangeText+'</b></span></span>'+
-    '<button class="btn xs ghost" data-a="scrollToPart" data-p="'+r.ap+'" title="Loncat langsung ke soal Part ini">Loncat ke Soal</button>'+
-  '</div>'+
-  '<div class="row between xs mut"><span id="aud-cur" class="mono">'+fmtT(cur)+'</span><span class="mono">'+fmtT(dur)+'</span></div>'+
-  (r.exam?'<div class="bar"><i id="aud-bar" style="width:'+pct(cur,dur)+'%"></i></div>':'<input id="aud-scrub" class="scrub" type="range" min="0" max="1000" value="'+(dur?Math.round(1000*cur/dur):0)+'" data-i="seek" aria-label="Seek">')+
-  '<div class="row g8" style="justify-content:center">'+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="-10" aria-label="Back 10 seconds">'+ic('back',18)+'</button>')+((r.exam&&a.playing)?'':'<button class="btn pri" data-a="playpause" style="min-width:122px">'+ic(a.playing?'pause':'play',18)+' '+(a.playing?'Pause':'Play')+'</button>')+(r.exam?'':'<button class="btn ico sm ghost" data-a="skip" data-v="10" aria-label="Forward 10 seconds">'+ic('fwd',18)+'</button><button class="btn sm ghost" data-a="speed">'+(a.rate||1)+'x</button>')+'</div>'+
-  '<div class="row between" style="margin-top:4px">'+
-    '<button class="btn xs ghost" data-a="toggleTranscript"><span class="ico">'+ic('book',14)+'</span> '+(r.showTranscript?'Sembunyikan Transcript':'Buka Transcript Audio')+'</button>'+
-    '<button class="btn xs ghost" data-a="openBookletPdf" data-p="'+(r.pdfPage||10)+'"><span class="ico">'+ic('external',12)+'</span> Buka Soal PDF (Hal. '+(r.pdfPage||10)+')</button>'+
-  '</div>'+
-  (r.showTranscript?'<div class="transcript-card mt8"><div class="row between mb8"><b>Audioscript Part '+r.ap+' (Test '+r.t+')</b><span class="xs dim">Kunci jawaban tertera pada teks</span></div><p class="xs mut" style="margin:0 0 8px">Lihat naskah rekaman lengkap dan kata kunci jawaban resmi di halaman '+scriptP+' pada buku PDF.</p><button class="btn sm pri block" data-a="jumpToScriptPdf" data-p="'+scriptP+'">'+ic('book',16)+' Buka Halaman '+scriptP+' di Viewer PDF</button></div>':'')+
+function playerHtml(r) {
+  const k = r.bk + '-' + r.t + '-' + r.ap, a = S.aud;
+  if (!hasAudio(k)) {
+    return '<div class="card soft row between g12" style="padding:10px 14px;border-left:3px solid var(--gold)">' +
+      '<span class="ico">' + ic('wave') + '</span><div class="grow sm">Audio tidak ditemukan untuk Part ' + r.ap + '.</div>' +
+      '<button class="btn sm" data-a="audioLib">Import</button>' +
+    '</div>';
+  }
+  const dur = a.dur || 0, cur = a.cur || 0;
+  const qRangeText = r.ap === 1 ? '1-10' : r.ap === 2 ? '11-20' : r.ap === 3 ? '21-30' : '31-40';
+  const partsChips = r.parts.length > 1 ? r.parts.map(p =>
+    '<button class="part-tab-chip ' + (p === r.ap ? 'cur' : '') + '" data-a="apart" data-v="' + p + '" title="Part ' + p + '">' + p + '</button>'
+  ).join('') : '';
+
+  return '<div class="player-bar ' + (a.playing ? 'playing' : '') + '">' +
+    '<button class="player-play-btn" data-a="playpause" title="' + (a.playing ? 'Pause' : 'Play') + '">' +
+      ic(a.playing ? 'pause' : 'play', 18) +
+    '</button>' +
+    '<div class="player-center grow">' +
+      '<div class="player-meta-top">' +
+        '<div class="row g6" style="align-items:center">' +
+          '<span class="part-badge">Part ' + r.ap + ' (' + qRangeText + ')</span>' +
+          (partsChips ? '<div class="row g4">' + partsChips + '</div>' : '') +
+        '</div>' +
+        '<div class="time-badge mono"><span id="aud-cur">' + fmtT(cur) + '</span> / <span id="aud-dur">' + fmtT(dur) + '</span></div>' +
+      '</div>' +
+      '<div class="scrub-container">' +
+        (r.exam ? '<div class="bar slim"><i id="aud-bar" style="width:' + pct(cur, dur) + '%"></i></div>' : '<input id="aud-scrub" class="scrub slim" type="range" min="0" max="1000" value="' + (dur ? Math.round(1000 * cur / dur) : 0) + '" data-i="seek" aria-label="Seek">') +
+      '</div>' +
+    '</div>' +
+    '<div class="row g6" style="align-items:center">' +
+      '<button class="btn xs ghost aud-btn" data-a="openTranscript" title="Buka Naskah Audio Langsung">Naskah</button>' +
+      (r.exam ? '' : '<button class="btn xs ghost aud-btn aud-speed" data-a="speed" title="Kecepatan Audio">' + (a.rate || 1) + 'x</button>') +
+    '</div>' +
   '</div>';
 }
 
@@ -1744,7 +2227,7 @@ function pdfPanelHtml(r){
   if (isReading && readerMode === 'web' && hasPassage) {
     const pas = getPassage(r.bk, r.t, r.ap);
     const scale = S.fontScale || 15;
-    return '<div class="pdf-panel ' + (r.mobView === 'doc' ? 'mob-full' : '') + '">' +
+    return '<div class="pdf-panel ' + (r.mobView === 'doc' ? 'mob-full' : '') + '" data-keep="true" data-k="pdf-panel" style="' + (r.mobView === 'ans' ? 'display:none;' : '') + '">' +
       '<div class="pdf-toolbar">' +
         '<div class="pdf-title"><span class="ico">' + ic('book', 16) + '</span> ' + esc(pas.title) + '</div>' +
         '<div class="pdf-controls">' +
@@ -1756,7 +2239,6 @@ function pdfPanelHtml(r){
           '<button class="chip xs" data-a="fontScale" data-v="down" title="Kecilkan teks">A-</button>' +
           '<button class="chip xs" data-a="fontScale" data-v="up" title="Besarkan teks">A+</button>' +
           (r.mobView === 'doc' ? '<button class="btn xs pri" data-a="mobView" data-v="ans">Lembar Soal</button>' : '') +
-          '<button class="btn xs ghost" data-a="togglePdf" title="Tutup Bacaan">' + ic('x', 14) + '</button>' +
         '</div>' +
       '</div>' +
       '<div class="web-reader-body" style="font-size:' + scale + 'px">' +
@@ -1771,7 +2253,7 @@ function pdfPanelHtml(r){
   // PDF Viewer
   if (!pdfInfo) return '';
   const pdfUrl = getPdfUrl(r.bk, r.pdfPage || 1);
-  return '<div class="pdf-panel ' + (r.mobView === 'doc' ? 'mob-full' : '') + '">' +
+  return '<div class="pdf-panel ' + (r.mobView === 'doc' ? 'mob-full' : '') + '" data-keep="true" data-k="pdf-panel" style="' + (r.mobView === 'ans' ? 'display:none;' : '') + '">' +
     '<div class="pdf-toolbar">' +
       '<div class="pdf-title"><span class="ico">' + ic('book', 16) + '</span> ' + esc(pdfInfo.title) + (r.pdfPage ? ' · p.' + r.pdfPage : '') + '</div>' +
       '<div class="pdf-controls">' +
@@ -1786,7 +2268,7 @@ function pdfPanelHtml(r){
         '<button class="btn xs ghost" data-a="togglePdf" title="Tutup PDF">' + ic('x', 14) + '</button>' +
       '</div>' +
     '</div>' +
-    '<iframe id="pdf-frame" class="pdf-frame" src="' + pdfUrl + '" title="Cambridge IELTS PDF"></iframe>' +
+    '<iframe id="pdf-frame" class="pdf-frame" data-keep="true" src="' + pdfUrl + '" title="Cambridge IELTS PDF"></iframe>' +
   '</div>';
 }
 
@@ -1813,14 +2295,12 @@ body+='<div id="part-sec-'+p+'" class="part-container '+(isAct?'active-part':'')
       '<button class="btn xs pri" data-a="openBookletPdf" data-p="'+(r.pdfPage||10)+'">Buka Soal PDF</button>'+
     '</div>':'';
 
-  const ansContent='<div class="ans-panel col g12" '+(r.mobView==='doc'?'style="display:none"':'')+'>'+
-    (r.m==='L'?playerHtml(r):'<div class="card soft sm mut row between"><span>'+(r.parts.length>1?'':PARTN.R[r.parts[0]-1]+' · ')+'Suggested time: '+(r.parts.length*20)+' minutes.</span>'+pdfBtn+'</div>')+
-    (r.m==='L'?'<div class="row between" style="margin:-4px 2px">'+pdfBtn+'</div>':'')+
-    listeningNotice+
+  const ansContent='<div class="ans-panel col g12" data-k="ans-panel" '+(r.mobView==='doc'?'style="display:none"':'')+'>'+
+    (r.m==='L'?playerHtml(r):'<div class="card soft sm mut row between"><span>'+(r.parts.length>1?'':PARTN.R[r.parts[0]-1]+' - ')+'Suggested time: '+(r.parts.length*20)+' minutes.</span></div>')+
     body+
   '</div>';
 
-  const pdfContent=(r.showPdf||r.mobView==='doc')?pdfPanelHtml(r):'';
+  const pdfContent = pdfPanelHtml(r);
 
   return '<div class="view col g12" style="max-width:none">'+
     topbar(BOOKS[r.bk].s+' · Test '+r.t+' · '+MOD[r.m].n,'<div class="pill gold" style="display:inline-flex;align-items:center;gap:6px"><span class="ico" style="opacity:0.8">'+ic('clock',12)+'</span>'+tm(r.t0)+'<button class="btn xs ghost" data-a="resetTimer" style="min-height:20px;padding:0 5px;font-size:11px;opacity:0.85;border-radius:6px;border:1px solid var(--line2)" title="Reset timer ke 00:00">↺ Reset</button></div>')+
@@ -1830,7 +2310,7 @@ body+='<div id="part-sec-'+p+'" class="part-container '+(isAct?'active-part':'')
       ansContent+
     '</div>'+
     (r.pad&&anyAny?'<div class="pad"><div class="in">'+keys.map(x=>'<button class="opt '+(x.length>1?'tf':'')+'" data-a="padkey" data-v="'+x+'">'+x+'</button>').join('')+'</div></div>':'')+
-    '<div class="tabbar dock"><div class="in"><div class="mono sm mut" style="padding-left:6px"><span id="anscount">'+n+'</span>/'+qs.length+' answered</div><div class="row g8">'+(anyAny?'<button class="chip '+(r.pad?'on':'')+'" data-a="padTog">Keys</button>':'')+'<button class="btn pri sm" data-a="submit">Check answers</button></div></div></div><div style="height:70px"></div></div>';
+    '<div class="tabbar dock"><div class="in"><div class="mono sm mut" style="padding-left:6px"><span id="anscount">'+n+'</span>/'+qs.length+' terjawab</div><div class="row g8">'+(anyAny?'<button class="chip '+(r.pad?'on':'')+'" data-a="padTog">Keys</button>':'')+'<button class="btn sm ghost" data-a="checkNow">'+(r.checked?'Sembunyikan Kunci':'Cek Jawaban')+'</button><button class="btn pri sm" data-a="submit">Selesai & Kumpulkan</button></div></div></div>'+transcriptDrawerHtml(r)+'<div style="height:70px"></div></div>';
 };
 
 A.togglePdf=()=>{
@@ -2017,8 +2497,20 @@ const LEAVE={};
 /* submit + results */
 A.submit=()=>{
   const r=S.run,key=getKey(r.bk,r.t,r.m);
-  if(!key)return sheet('<div class="t2">No answer key yet</div><div class="md mt16"><p>The book’s answer key is not stored in this app. Paste it from your book or PDF, one answer per line, and everyone in the group can use it.</p></div><div class="col g8 mt16"><button class="btn pri block" data-a="keyFor2">Add the key now</button><button class="btn block" data-a="saveOnly">Save my answers, grade later</button></div>');
+  if(!key)return toast('Kunci jawaban belum tersedia.');
+  const qs = runQs(r);
+  const answered = qs.filter(q => String(r.ans[q]||'').trim()).length;
+  if(answered < qs.length){
+    sheet('<div class="t2">Kumpulkan Jawaban?</div><p class="sm mut" style="margin:8px 0 0">Kamu baru menjawab <b>'+answered+'</b> dari <b>'+qs.length+'</b> soal. Selesaikan dan nilai sekarang?</p><div class="col g8 mt16"><button class="btn pri block" data-a="confirmSubmit">Ya, Selesaikan & Nilai</button><button class="btn block ghost" data-a="closeSheet">Lanjutkan Mengerjakan</button></div>');
+    return;
+  }
   finishRun(key);
+};
+A.confirmSubmit=()=>{
+  S.sheet=null;
+  if(!S.run)return;
+  const key=getKey(S.run.bk,S.run.t,S.run.m);
+  if(key)finishRun(key);
 };
 A.keyFor2=()=>{const r=S.run;S.v.key={bk:r.bk,t:r.t,m:r.m,text:''};S.sheet=null;push('keys')};
 A.saveOnly=()=>{S.sheet=null;finishRun(null)};
@@ -2036,15 +2528,63 @@ function finishRun(key){
   S.run=null;S.stack.pop();push('result',{aid:id});
 }
 SCR.result=p=>{
-  const a=mine('a_'+p.aid);if(!a.id)return '<div class="view">'+topbar('Result')+emptyBox('This attempt is not available.')+'</div>';
+  const a=mine('a_'+p.aid);if(!a.id)return '<div class="view">'+topbar('Result')+emptyBox('Attempt tidak ditemukan.')+'</div>';
   const graded=a.sc!=null,full=a.tot===40,b=graded&&full?bandOf(a.m,a.sc):null;
   const prev=attempts().filter(x=>x.id!==a.id&&x.bk===a.bk&&x.t===a.t&&x.m===a.m&&x.parts.join()===a.parts.join()&&x.sc!=null&&x.ts<a.ts)[0];
-  if(!graded){const key=getKey(a.bk,a.t,a.m);return '<div class="view col g16">'+topbar('Saved answers')+'<div class="card tc col g8"><div class="t2">Waiting for a key</div><p class="sm mut">Your answers are saved. Grade them as soon as a key exists.</p>'+(key?'<button class="btn pri" data-a="regrade" data-id="'+a.id+'">Grade now</button>':'<button class="btn pri" data-a="keyFor3" data-id="'+a.id+'">Add the key</button>')+'</div></div>'}
+  if(!graded){
+    const key=getKey(a.bk,a.t,a.m);
+    return '<div class="view col g16">'+topbar('Jawaban Tersimpan')+'<div class="card tc col g8"><div class="t2">Menunggu Kunci</div><p class="sm mut">Jawaban telah disimpan.</p>'+(key?'<button class="btn pri" data-a="regrade" data-id="'+a.id+'">Nilai Sekarang</button>':'')+'</div></div>';
+  }
   const pc=pct(a.sc,a.tot);
-  return '<div class="view col g16">'+topbar(BOOKS[a.bk].s+' · Test '+a.t+' · '+MOD[a.m].n)+
-  '<div class="card hero"><div class="row g16">'+ring(pc,92,9,pc+'%')+'<div class="grow"><div class="eyebrow">'+partsLabel(a.m,a.parts)+'</div><div class="num" style="font-size:46px;line-height:1;margin:4px 0">'+a.sc+'<span class="dim" style="font-size:24px">/'+a.tot+'</span></div><div class="sm mut">'+(b!=null?'Estimated band <b class="gold">'+fmtBand(b)+'</b> · ':'')+fmtT(a.dur)+' used</div></div></div>'+(prev?'<div class="xs mut" style="margin-top:12px">Last time: '+prev.sc+'/'+prev.tot+' ('+(a.sc-prev.sc>=0?'+':'')+(a.sc-prev.sc)+')</div>':'')+(a.src==='derived'?'<div class="xs warn" style="margin-top:8px">Graded with an unofficial key. Check disputed answers against your book.</div>':a.src==='file'?'<div class="xs mut" style="margin-top:8px">Graded with the answer list typed in your PDF. If a mark looks wrong, check your book.</div>':'')+'</div>'+
-  (a.w.length?sec('To fix ('+a.w.length+')')+'<div class="card" style="padding:4px 16px">'+a.w.map(x=>'<div class="q"><span class="qn bad">'+x.n+'</span><div class="grow"><div class="sm"><span class="mut">You:</span> '+(x.y?esc(x.y):'<i class="dim">blank</i>')+(x.near?' <span class="pill warn">check spelling</span>':'')+(x.u?' <span class="pill warn">key unsure</span>':'')+'</div><div class="ans-key">'+esc(x.k)+'</div></div>'+(/^[a-z][a-z' -]{3,}$/i.test(x.k)&&x.k.indexOf('/')<0&&!/^(true|false|not given|yes|no)$/i.test(x.k)?'<button class="btn xs ghost" data-a="vocabFrom" data-w="'+esc(x.k)+'">+ Vocab</button>':'')+'</div>').join('')+'</div>':'<div class="card tc"><div class="t2">Perfect score</div><p class="sm mut" style="margin:6px 0 0">Nothing to fix here.</p></div>')+
-  '<div class="row g8"><button class="btn block" data-a="again" data-id="'+a.id+'">'+ic('repeat',16)+' Try again</button><button class="btn pri block" data-a="nav" data-v="home">Done</button></div></div>';
+  const key=getKey(a.bk,a.t,a.m);
+
+  // Generate full question review list
+  const qs = a.parts.flatMap(pt => {
+    const [q0, q1] = RANGE[a.m][pt - 1];
+    return Array.from({ length: q1 - q0 + 1 }, (_, i) => q0 + i);
+  });
+
+  const reviewItemsHtml = qs.map(q => {
+    const userVal = a.ans[q] || '';
+    const keyVal = (key && key.a && key.a[q]) ? key.a[q] : [];
+    const isOk = keyVal.length ? gradeOne(userVal, keyVal).ok : false;
+    const isBlank = !userVal || !String(userVal).trim();
+    const keyDisplay = keyVal.join(' / ');
+
+    return '<div class="review-item">' +
+      '<div class="review-qn ' + (isOk ? 'ok' : 'err') + '">' + q + '</div>' +
+      '<div class="review-body">' +
+        '<div class="review-ans-y">' + (isBlank ? '<i class="dim">Kosong</i>' : esc(userVal)) + '</div>' +
+        '<div class="review-ans-k">' + (isOk ? '<span style="color:#30d158">Benar</span>' : esc(keyDisplay)) + '</div>' +
+      '</div>' +
+      (!isOk && keyDisplay && /^[a-z][a-z' -]{3,}$/i.test(keyDisplay) && keyDisplay.indexOf('/') < 0 && !/^(true|false|not given|yes|no)$/i.test(keyDisplay) ?
+        '<button class="btn xs ghost" data-a="vocabFrom" data-w="' + esc(keyDisplay) + '">+ Vocab</button>' : '') +
+    '</div>';
+  }).join('');
+
+  const bTitle = BOOKS[a.bk] ? BOOKS[a.bk].s : a.bk.toUpperCase();
+  return '<div class="view col g16">' +
+    topbar(bTitle + ' - Test ' + a.t + ' - ' + MOD[a.m].n) +
+    '<div class="card hero">' +
+      '<div class="row g16">' +
+        ring(pc, 92, 9, pc + '%') +
+        '<div class="grow">' +
+          '<div class="eyebrow">' + partsLabel(a.m, a.parts) + '</div>' +
+          '<div class="num" style="font-size:46px;line-height:1;margin:4px 0">' + a.sc + '<span class="dim" style="font-size:24px">/' + a.tot + '</span></div>' +
+          '<div class="sm mut">' + (b != null ? 'Estimasi IELTS Band <b class="gold">' + fmtBand(b) + '</b> - ' : '') + fmtT(a.dur) + '</div>' +
+        '</div>' +
+      '</div>' +
+      (prev ? '<div class="xs mut" style="margin-top:12px">Hasil sebelumnya: ' + prev.sc + '/' + prev.tot + ' (' + (a.sc - prev.sc >= 0 ? '+' : '') + (a.sc - prev.sc) + ')</div>' : '') +
+    '</div>' +
+    '<div class="sec-lbl">Evaluasi Jawaban (' + a.sc + '/' + a.tot + ' Benar)</div>' +
+    '<div class="card" style="padding:0">' +
+      reviewItemsHtml +
+    '</div>' +
+    '<div class="row g8">' +
+      '<button class="btn block" data-a="again" data-id="' + a.id + '">' + ic('repeat', 16) + ' Ulangi Latihan</button>' +
+      '<button class="btn pri block" data-a="nav" data-v="home">Selesai</button>' +
+    '</div>' +
+  '</div>';
 };
 A.again=d=>{const a=mine('a_'+d.id);S.stack=[];S.tab='learn';startRun({bk:a.bk,t:a.t,m:a.m,parts:a.parts})};
 A.keyFor3=d=>{const a=mine('a_'+d.id);S.v.key={bk:a.bk,t:a.t,m:a.m,text:''};push('keys')};
