@@ -1,5 +1,5 @@
 // Service Worker for Cambridge IELTS PWA
-const CACHE_NAME = 'ielts-pwa-v6';
+const CACHE_NAME = 'ielts-pwa-v7';
 const CORE_ASSETS = [
   './manifest.json',
   './cbt_data.js',
