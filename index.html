@@ -1793,9 +1793,29 @@ let _dailyRecTimer=0;
 let _dailyRecElapsed=0;
 let _dailyRecLoadedDate='';
 
+function handleDailyAudioUpload(input){
+  if(!input||!input.files||!input.files[0])return;
+  const file=input.files[0];
+  if(_dailyRecBlobUrl)URL.revokeObjectURL(_dailyRecBlobUrl);
+  _dailyRecBlobUrl=URL.createObjectURL(file);
+  _dailyRecState='stopped';
+  _dailyRecElapsed=30;
+  try{
+    if(window.IDB&&IDB.put){
+      IDB.put('speak_'+dkey(),file,{date:dkey(),dur:30});
+    }
+  }catch(e){}
+  render();
+}
+
 async function startDailyVoiceRecord(){
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+      const fi=document.getElementById('daily-audio-file');
+      if(fi){
+        fi.click();
+        return;
+      }
       toast('Browser tidak mendukung rekaman suara');
       return;
     }
@@ -1928,15 +1948,19 @@ function speakTodayHtml(topic,dq,dd){
       (_dailyRecBlobUrl?'<audio controls src="'+_dailyRecBlobUrl+'" style="width:100%;height:38px;margin-top:4px"></audio>':'')+
     '</div>';
   }else{
-    widget='<div class="card soft row between g12" style="padding:12px 14px;border-radius:14px;background:var(--surf2);margin-top:8px">'+
-      '<div class="row g10">'+
-        '<div style="width:36px;height:36px;border-radius:50%;background:color-mix(in srgb,var(--gold) 15%,transparent);display:grid;place-items:center;color:var(--gold);flex:none">'+ic('mic',18)+'</div>'+
-        '<div><div class="t3" style="font-size:14px">Rekam Suara</div><div class="xs dim">Gunakan mic HP untuk rekam 30 detik</div></div>'+
+    widget='<div class="card soft col g12" style="padding:14px 16px;border-radius:14px;background:var(--surf2);margin-top:8px">'+
+      '<div class="row g12" style="align-items:center">'+
+        '<div style="width:40px;height:40px;border-radius:50%;background:color-mix(in srgb,var(--gold) 16%,transparent);display:grid;place-items:center;color:var(--gold);flex:none">'+ic('mic',20)+'</div>'+
+        '<div class="grow">'+
+          '<div class="t3" style="font-size:15px;font-weight:600;color:var(--fg)">Rekam Suara</div>'+
+          '<div class="xs dim" style="margin-top:2px;line-height:1.4">Gunakan mikrofon HP untuk merekam respon 30 detik.</div>'+
+        '</div>'+
       '</div>'+
-      '<div class="row g8">'+
-        '<button class="btn sm ghost" data-a="dailyDone" style="font-size:12px">Lewati</button>'+
-        '<button class="btn sm pri" data-a="dailyRecStart" style="font-size:13px;font-weight:600">'+ic('mic',15)+' Mulai Rekam</button>'+
+      '<div class="row g8" style="justify-content:flex-end;margin-top:2px">'+
+        '<button class="btn sm ghost" data-a="dailyDone" style="font-size:13px;padding:8px 14px">Lewati</button>'+
+        '<button class="btn sm pri" data-a="dailyRecStart" style="font-size:13.5px;font-weight:600;padding:8px 18px">'+ic('mic',16)+' Mulai Rekam</button>'+
       '</div>'+
+      '<input type="file" id="daily-audio-file" accept="audio/*" capture="microphone" style="display:none" onchange="handleDailyAudioUpload(this)">'+
     '</div>';
   }
 
@@ -2267,7 +2291,7 @@ function startRun(o){
   if(pDef&&typeof pDef==='object')initPdfPage=pDef[o.parts[0]]||pDef[1]||1;
   else if(typeof pDef==='number')initPdfPage=pDef;
   else if(o.m==='L')initPdfPage=10;
-  S.run={id,bk:o.bk,t:o.t,m:o.m,parts:o.parts,ans:(dr&&dr.ans)||{},t0:(dr&&dr.t0&&Date.now()-dr.t0<6*36e5)?dr.t0:Date.now(),exam:!!o.exam,from:o.from,ap:o.parts[0],pad:false,cur:null,showPdf:true,pdfPage:initPdfPage,mobView:'ans'};
+  S.run={id,bk:o.bk,t:o.t,m:o.m,parts:o.parts,ans:(dr&&dr.ans)||{},t0:(dr&&dr.t0&&Date.now()-dr.t0<6*36e5)?dr.t0:Date.now(),exam:!!o.exam,from:o.from,ap:o.parts[0],pad:false,cur:null,showPdf:o.m==='R',pdfPage:initPdfPage,mobView:'ans'};
   S.v.pick={...(S.v.pick||{}),bk:o.bk,t:o.t,m:o.m};
   push('run');if(o.m==='L')loadAudio();
 }
@@ -2547,7 +2571,7 @@ function pdfPanelHtml(r){
           '</div>' : '') +
         '<button class="btn xs ghost" data-a="popPdf" title="Buka PDF di jendela baru"><span class="ico">' + ic('external', 14) + '</span> Pop-out</button>' +
         (r.mobView === 'doc' ? '<button class="btn xs pri" data-a="mobView" data-v="ans">Lembar Soal</button>' : '') +
-        '<button class="btn xs ghost" data-a="togglePdf" title="Tutup PDF">' + ic('x', 14) + '</button>' +
+        '<button class="btn xs ghost" data-a="closePdf" title="Tutup PDF">' + ic('x', 14) + '</button>' +
       '</div>' +
     '</div>' +
     '<iframe id="pdf-frame" class="pdf-frame" data-keep="true" src="' + pdfUrl + '" title="Cambridge IELTS PDF"></iframe>' +
@@ -2566,18 +2590,12 @@ body+='<div id="part-sec-'+p+'" class="part-container '+(isAct?'active-part':'')
   
   const pdfBtn='<button class="chip '+(r.showPdf?'on':'')+'" data-a="togglePdf"><span class="ico">'+ic('book',14)+'</span> '+(r.showPdf?'Hide PDF':(r.m==='R'?'Show Reading PDF':'Show Booklet PDF'))+'</button>';
   
-  const mobNav='<div class="mob-nav-strip seg"><button class="view-tab-btn '+(r.mobView!=='doc'?'on':'')+'" data-a="mobView" data-v="ans">Answer Sheet ('+n+'/'+qs.length+')</button><button class="view-tab-btn '+(r.mobView==='doc'?'on':'')+'" data-a="mobView" data-v="doc">Cambridge PDF (p.'+(r.pdfPage||1)+')</button></div>';
+  const isDocView = r.showPdf && r.mobView === 'doc';
+  const mobNav=(r.m==='R'&&r.showPdf)?'<div class="mob-nav-strip seg"><button class="view-tab-btn '+(r.mobView!=='doc'?'on':'')+'" data-a="mobView" data-v="ans">Lembar Soal ('+n+'/'+qs.length+')</button><button class="view-tab-btn '+(r.mobView==='doc'?'on':'')+'" data-a="mobView" data-v="doc">Bacaan (p.'+(r.pdfPage||1)+')</button></div>':'';
 
-  const listeningNotice=(r.m==='L')?
-    '<div class="card soft row between g12" style="border-left:3px solid var(--gold);padding:10px 14px;margin-bottom:4px">'+
-      '<div class="grow xs">'+
-        '<b style="color:var(--text)">Buku Soal Cambridge 19 (Part '+r.ap+' · Hal. '+(r.pdfPage||10)+')</b>'+
-        '<div class="mut">Tabel catatan dan pertanyaan lengkap tertera di buku soal PDF.</div>'+
-      '</div>'+
-      '<button class="btn xs pri" data-a="openBookletPdf" data-p="'+(r.pdfPage||10)+'">Buka Soal PDF</button>'+
-    '</div>':'';
+  const listeningNotice='';
 
-  const ansContent='<div class="ans-panel col g12" data-k="ans-panel" '+(r.mobView==='doc'?'style="display:none"':'')+'>'+
+  const ansContent='<div class="ans-panel col g12" data-k="ans-panel" '+(isDocView?'style="display:none"':'')+'>'+
     (r.m==='L'?playerHtml(r):'<div class="card soft sm mut row between"><span>'+(r.parts.length>1?'':PARTN.R[r.parts[0]-1]+' - ')+'Suggested time: '+(r.parts.length*20)+' minutes.</span></div>')+
     body+
   '</div>';
@@ -2595,15 +2613,26 @@ body+='<div id="part-sec-'+p+'" class="part-container '+(isAct?'active-part':'')
     '<div class="tabbar dock"><div class="in"><div class="mono sm mut" style="padding-left:6px"><span id="anscount">'+n+'</span>/'+qs.length+' terjawab</div><div class="row g8">'+(anyAny?'<button class="chip '+(r.pad?'on':'')+'" data-a="padTog">Keys</button>':'')+'<button class="btn sm ghost" data-a="checkNow">'+(r.checked?'Sembunyikan Kunci':'Cek Jawaban')+'</button><button class="btn pri sm" data-a="submit">Selesai & Kumpulkan</button></div></div></div>'+transcriptDrawerHtml(r)+'<div style="height:70px"></div></div>';
 };
 
+A.closePdf=()=>{
+  if(!S.run)return;
+  S.run.showPdf=false;
+  S.run.mobView='ans';
+  render();
+};
 A.togglePdf=()=>{
   if(!S.run)return;
   S.run.showPdf=!S.run.showPdf;
-  if(S.run.showPdf&&!S.run.pdfPage){
-    const pdfInfo=PDF_MAP[S.run.bk];
-    if(pdfInfo){
-      const pDef=pdfInfo[S.run.m]&&pdfInfo[S.run.m][S.run.t];
-      if(S.run.m==='R'&&pDef)S.run.pdfPage=pDef[S.run.parts[0]]||pDef[1]||1;
-      else if(pdfInfo.L)S.run.pdfPage=pdfInfo.L[S.run.t]||1;
+  if(!S.run.showPdf){
+    S.run.mobView='ans';
+  }else{
+    S.run.mobView='doc';
+    if(!S.run.pdfPage){
+      const pdfInfo=PDF_MAP[S.run.bk];
+      if(pdfInfo){
+        const pDef=pdfInfo[S.run.m]&&pdfInfo[S.run.m][S.run.t];
+        if(S.run.m==='R'&&pDef)S.run.pdfPage=pDef[S.run.parts[0]]||pDef[1]||1;
+        else if(pdfInfo.L)S.run.pdfPage=pdfInfo.L[S.run.t]||1;
+      }
     }
   }
   render();
