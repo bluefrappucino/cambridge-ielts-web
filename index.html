@@ -4,7 +4,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icon-192.png"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+<link rel="apple-touch-icon" href="icon-192.png"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:15px -apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 
 .app.test-mode {
   max-width: 1440px;
@@ -87,12 +91,13 @@
 }
 @media (max-width: 960px) {
   .app.test-mode {
-    max-width: 640px;
-    padding: 0 12px;
+    max-width: 100%;
+    padding: 0 6px;
   }
   .test-layout {
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+    margin-top: 6px;
   }
   .mob-nav-strip {
     display: flex;
@@ -105,7 +110,7 @@
     top: 0;
     height: 75vh;
     width: 100%;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
   .pdf-panel.mob-full {
     position: fixed;
@@ -118,7 +123,8 @@
     max-height: none;
     overflow-y: visible;
     width: 100%;
-    padding-bottom: 110px;
+    padding-right: 0;
+    padding-bottom: 95px;
   }
   .view-tab-btn {
     flex: 1;
@@ -128,14 +134,9 @@
 
 /* ===== Audio active state & Question Sync ===== */
 .part-container {
-  transition: all 0.25s ease;
-  border-radius: 16px;
-  padding: 2px;
+  margin-bottom: 24px;
 }
 .part-container.active-part {
-  background: color-mix(in srgb, var(--gold) 4%, transparent);
-  border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--gold) 8%, transparent);
 }
 .player.playing {
   border-color: color-mix(in srgb, var(--gold) 40%, var(--line));
@@ -188,59 +189,13 @@
 .web-passage-content b {
   color: #fff;
 }
-.q-card {
-  background: var(--surf);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  transition: border-color 0.15s ease;
-}
-.q-card:hover {
-  border-color: var(--line2);
-}
-.q-card.note-q {
-  background: var(--surf2);
-}
-.note-stem {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 14px;
-  line-height: 1.6;
-}
-.note-lead {
-  color: var(--text);
-  font-weight: 500;
-}
-.note-trail {
-  color: var(--text);
-  opacity: 0.9;
-}
-.q-inline-inp {
-  min-width: 140px;
-  max-width: 240px;
-  height: 32px;
-  padding: 2px 10px;
-  font-size: 13.5px;
-  font-weight: 600;
-  border-radius: 8px;
-  background: var(--surf);
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  text-align: left;
-}
-.q-inline-inp:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 2px rgba(229,161,54,0.25);
-}
 .q-stem {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 600;
   color: var(--text);
   margin-bottom: 10px;
   line-height: 1.5;
+  font-family: var(--sans);
 }
 .mc-list {
   display: flex;
@@ -406,59 +361,96 @@
 }
 .aud-speed { min-width: 32px; font-weight: 600; }
 
-/* Inline Running Text for Note Completion (No 3-line breaks) */
+/* Clean Modern CBT Question Layout (Full width, seamless cards, no nested boxes) */
+.part-questions-card {
+  background: var(--surf) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 16px !important;
+  padding: 4px 16px !important;
+  box-shadow: var(--shadow) !important;
+}
+@media (max-width: 960px) {
+  .part-questions-card {
+    border-radius: 14px !important;
+    padding: 2px 8px !important;
+  }
+}
+
+.q-instruction {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg2);
+  padding: 10px 4px 8px;
+  border-bottom: 1px solid var(--line);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-family: var(--sans);
+}
+
 .q-card {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 8px;
-  background: var(--card);
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--line) !important;
+  border-radius: 0 !important;
+  padding: 13px 2px !important;
+  margin-bottom: 0 !important;
+  box-shadow: none !important;
+  transition: background-color 0.15s ease !important;
+}
+.q-card:last-child {
+  border-bottom: none !important;
 }
 .q-card.is-ok {
-  border-color: rgba(48,209,88,0.4);
-  background: rgba(48,209,88,0.04);
+  background: rgba(48,209,88,0.06) !important;
+  border-radius: 8px !important;
 }
 .q-card.is-err {
-  border-color: rgba(255,69,58,0.4);
-  background: rgba(255,69,58,0.04);
+  background: rgba(255,69,58,0.06) !important;
+  border-radius: 8px !important;
 }
+
 .note-stem {
   display: block !important;
-  line-height: 2.3 !important;
+  line-height: 2.1 !important;
   font-size: 14.5px !important;
-  color: var(--text) !important;
+  font-weight: 500 !important;
+  color: var(--fg) !important;
   text-align: left !important;
+  font-family: var(--sans) !important;
 }
 .note-lead, .note-trail {
   display: inline !important;
   font-weight: 500 !important;
-  color: var(--text) !important;
+  color: var(--fg) !important;
+  font-family: var(--sans) !important;
   vertical-align: baseline !important;
 }
 .q-inline-inp {
-  display: inline-block !important;
+  display: inline-flex !important;
+  align-items: center !important;
   vertical-align: middle !important;
-  width: 95px !important;
+  width: 90px !important;
   min-width: 65px !important;
-  max-width: 125px !important;
-  height: 28px !important;
-  min-height: 28px !important;
+  max-width: 135px !important;
+  height: 32px !important;
+  min-height: 32px !important;
   margin: 0 4px !important;
-  padding: 1px 6px !important;
-  font-size: 13.5px !important;
+  padding: 0 8px !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
-  font-family: inherit !important;
-  text-align: center !important;
-  border-radius: 6px !important;
-  border: 1.5px solid var(--border) !important;
-  background: var(--surf) !important;
-  color: var(--gold) !important;
+  font-family: var(--sans) !important;
+  text-align: left !important;
+  border-radius: 7px !important;
+  border: 1px solid var(--line2) !important;
+  background: var(--surf2) !important;
+  color: var(--fg) !important;
   transition: all 0.15s ease !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
 }
 .q-inline-inp:focus {
   border-color: var(--gold) !important;
-  box-shadow: 0 0 0 2px rgba(212,175,55,0.25) !important;
+  background: var(--surf) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 22%, transparent) !important;
   outline: none !important;
 }
 .q-inline-inp.inp-ok {
@@ -477,13 +469,14 @@
   justify-content: center !important;
   min-width: 22px !important;
   height: 22px !important;
-  padding: 0 4px !important;
+  padding: 0 3px !important;
   margin-right: 6px !important;
   font-size: 12px !important;
   font-weight: 700 !important;
-  border-radius: 4px !important;
-  background: rgba(255,255,255,0.08) !important;
-  color: var(--mut) !important;
+  font-family: var(--sans) !important;
+  border-radius: 6px !important;
+  background: color-mix(in srgb, var(--gold) 15%, var(--surf2)) !important;
+  color: var(--gold) !important;
   vertical-align: middle !important;
 }
 .qn.ok {
@@ -637,33 +630,34 @@
 
 :root{
   --bg:#0a1016;--bg2:#0f1820;--surf:#121c25;--surf2:#19252f;--surf3:#223140;
-  --line:rgba(232,222,196,.09);--line2:rgba(232,222,196,.18);
-  --fg:#ece6d8;--fg2:#b3ac9b;--fg3:#7f7b70;
+  --line:rgba(232,222,196,.08);--line2:rgba(232,222,196,.16);
+  --fg:#ede8dc;--fg2:#b5ada0;--fg3:#807c73;
   --gold:#d8b476;--gold2:#f1dba7;--on-gold:#1a1407;
   --ok:#71d0a2;--warn:#ebbb5e;--bad:#ee7d70;--info:#7fc6ea;
   --m1:#d8b476;--m2:#6cc4d6;--m3:#d890bb;
   --card:var(--surf);--border:var(--line2);--text:var(--fg);
-  --shadow:0 12px 32px rgba(0,0,0,.38);
-  --serif:'Instrument Serif','Iowan Old Style',Georgia,serif;
-  --sans:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --shadow:0 8px 24px rgba(0,0,0,.32);
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --serif:var(--sans);
   --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
   color-scheme:dark;
 }
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
-  --bg:#eceeea;--bg2:#e4e8e3;--surf:#fbfbf8;--surf2:#f1f3ee;--surf3:#e5e9e2;
-  --line:rgba(18,32,30,.10);--line2:rgba(18,32,30,.19);
-  --fg:#13211f;--fg2:#44544f;--fg3:#78867f;
+  --bg:#f6f5f1;--bg2:#edebe4;--surf:#ffffff;--surf2:#f0eee9;--surf3:#e5e3dc;
+  --line:rgba(20,24,28,.08);--line2:rgba(20,24,28,.16);
+  --fg:#13171c;--fg2:#454f59;--fg3:#75828e;
   --card:var(--surf);--border:var(--line2);--text:var(--fg);
-  --gold:#94702b;--gold2:#b98b3b;--on-gold:#fffaf0;
+  --gold:#9e7529;--gold2:#b88d3d;--on-gold:#ffffff;
   --ok:#1b8358;--warn:#a5670b;--bad:#bc392b;--info:#1b6c91;
-  --m1:#94702b;--m2:#14778b;--m3:#a24a7a;--shadow:0 10px 28px rgba(20,35,30,.10);color-scheme:light}}
+  --m1:#9e7529;--m2:#14778b;--m3:#a24a7a;--shadow:0 6px 20px rgba(20,35,30,.06);color-scheme:light}}
 :root[data-theme="light"]{
-  --bg:#eceeea;--bg2:#e4e8e3;--surf:#fbfbf8;--surf2:#f1f3ee;--surf3:#e5e9e2;
-  --line:rgba(18,32,30,.10);--line2:rgba(18,32,30,.19);
-  --fg:#13211f;--fg2:#44544f;--fg3:#78867f;
-  --gold:#94702b;--gold2:#b98b3b;--on-gold:#fffaf0;
+  --bg:#f6f5f1;--bg2:#edebe4;--surf:#ffffff;--surf2:#f0eee9;--surf3:#e5e3dc;
+  --line:rgba(20,24,28,.08);--line2:rgba(20,24,28,.16);
+  --fg:#13171c;--fg2:#454f59;--fg3:#75828e;
+  --card:var(--surf);--border:var(--line2);--text:var(--fg);
+  --gold:#9e7529;--gold2:#b88d3d;--on-gold:#ffffff;
   --ok:#1b8358;--warn:#a5670b;--bad:#bc392b;--info:#1b6c91;
-  --m1:#94702b;--m2:#14778b;--m3:#a24a7a;--shadow:0 10px 28px rgba(20,35,30,.10);color-scheme:light}
+  --m1:#9e7529;--m2:#14778b;--m3:#a24a7a;--shadow:0 6px 20px rgba(20,35,30,.06);color-scheme:light}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
@@ -686,12 +680,12 @@ a{color:var(--gold)}
 
 /* type */
 .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--fg3)}
-.t1{font:400 38px/1.04 var(--serif);letter-spacing:-.01em;margin:0;text-wrap:balance}
-.t1 em,.t2 em{font-style:italic;color:var(--gold)}
-.t2{font:400 26px/1.1 var(--serif);margin:0;text-wrap:balance}
+.t1{font:600 32px/1.15 var(--sans);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.t1 em,.t2 em{font-style:normal;color:var(--gold)}
+.t2{font:600 22px/1.25 var(--sans);letter-spacing:-.01em;margin:0;text-wrap:balance}
 .t3{font-size:15px;font-weight:650;margin:0}
 .mut{color:var(--fg2)}.dim{color:var(--fg3)}.sm{font-size:13px}.xs{font-size:11.5px}
-.num{font-family:var(--serif);font-variant-numeric:lining-nums tabular-nums}
+.num{font-family:var(--sans);font-weight:600;font-variant-numeric:lining-nums tabular-nums}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .gold{color:var(--gold)}.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
 .row{display:flex;align-items:center;gap:12px}.col{display:flex;flex-direction:column;gap:12px}
@@ -779,9 +773,9 @@ a{color:var(--gold)}
 .qsec{margin:22px 2px 8px;display:flex;flex-direction:column;gap:2px}
 .qsec b{font-size:13px;letter-spacing:.02em}.qsec span{font-size:12px;color:var(--fg3)}
 .q{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line)}
-.qn{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--surf3);font:600 13px var(--mono);flex:none;color:var(--fg2)}
+.qn{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:var(--surf2);font:700 12.5px var(--sans);flex:none;color:var(--fg2)}
 .qn.ok{background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ok)}.qn.bad{background:color-mix(in srgb,var(--bad) 20%,transparent);color:var(--bad)}
-.q .inp{min-height:38px;border-radius:11px;font-family:var(--mono);font-size:14px}
+.q .inp{min-height:36px;border-radius:8px;font-family:var(--sans);font-size:14.5px}
 .opts{display:flex;flex-wrap:wrap;gap:6px}
 .opt{min-width:40px;height:38px;padding:0 12px;border-radius:11px;border:1px solid var(--line2);font:600 13px var(--mono);color:var(--fg2);transition:all .12s}
 .opt.on{background:color-mix(in srgb,var(--gold) 20%,transparent);border-color:var(--gold);color:var(--gold)}
@@ -2585,7 +2579,7 @@ SCR.run=()=>{
   let body='',anyAny=false;
   for(const p of r.parts){const[a,b]=RANGE[r.m][p-1];
     const isAct=(r.m==='L'&&r.ap===p);
-body+='<div id="part-sec-'+p+'" class="part-container '+(isAct?'active-part':'')+'"><div class="qsec row between"><div><b>'+PARTN[r.m][p-1]+'</b> <span>Questions '+a+'–'+b+'</span></div>'+(r.m==='L'&&!isAct?'<button class="btn xs ghost" data-a="apart" data-v="'+p+'">'+ic('play',12)+' Putar Part ini</button>':'')+'</div><div class="card" style="padding:4px 16px">'+secsFor(key,r.m,p).map(s=>{if(s.type==='any'||s.type==='text')anyAny=true;return(s.h?'<div class="xs dim" style="padding:12px 0 2px">'+esc(s.h)+'</div>':'')+Array.from({length:s.to-s.from+1},(_,i)=>qRow(r,s.from+i,s)).join('')}).join('')+'</div></div>';}
+body+='<div id="part-sec-'+p+'" class="part-container '+(isAct?'active-part':'')+'"><div class="qsec row between"><div><b>'+PARTN[r.m][p-1]+'</b> <span>Questions '+a+'–'+b+'</span></div>'+(r.m==='L'&&!isAct?'<button class="btn xs ghost" data-a="apart" data-v="'+p+'">'+ic('play',12)+' Putar Part ini</button>':'')+'</div><div class="card part-questions-card">'+secsFor(key,r.m,p).map(s=>{if(s.type==='any'||s.type==='text')anyAny=true;return(s.h?'<div class="q-instruction">'+esc(s.h)+'</div>':'')+Array.from({length:s.to-s.from+1},(_,i)=>qRow(r,s.from+i,s)).join('')}).join('')+'</div></div>';}
   const keys=['A','B','C','D','E','F','G','H','TRUE','FALSE','NOT GIVEN','YES','NO'];
   
   const pdfBtn='<button class="chip '+(r.showPdf?'on':'')+'" data-a="togglePdf"><span class="ico">'+ic('book',14)+'</span> '+(r.showPdf?'Hide PDF':(r.m==='R'?'Show Reading PDF':'Show Booklet PDF'))+'</button>';
