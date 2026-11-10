@@ -615,6 +615,8 @@
 .review-ans-y { color: var(--mut); font-size: 12px; margin-bottom: 2px; }
 .review-ans-k { color: var(--gold); font-weight: 600; font-size: 13.5px; }
 
+
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(1.18); } }
 </style>
 </head><body>
 <title>Meridian IELTS — Cambridge 19 & 20 Practice Suite</title>
@@ -1166,10 +1168,46 @@ async function initBackend(){
   S.ready=true;touchMe();loadProfiles();render();
 }
 function touchMe(){
-  const id='members/'+S.uid,m=doc(id),now=Date.now();
+  const id='members/'+S.uid,m=doc(id),now=Date.now(),today=dkey();
   if(!m)save(id,{joined:now,seen:now,done:{},days:{},hist:[]});
   else if(now-(m.seen||0)>6e5)save(id,{seen:now});
-  if(!doc('team/plan')&&!DB.ro)save('team/plan',{start:dkey(),created:now,by:S.uid,target:7,exam:''});
+  if(!doc('team/plan')&&!DB.ro)save('team/plan',{start:today,created:now,by:S.uid,target:7,exam:''});
+
+  // User requested immediate reset to Day 1
+  if(!ls.get('mdn_reset_day1_v2')){
+    ls.set('mdn_reset_day1_v2','1');
+    const p=doc('team/plan')||{};
+    save('team/plan',{...p,start:today,resetAt:now});
+    const curM=doc(id)||{};
+    const newDone={...(curM.done||{})};
+    for(const k in newDone){if(k.startsWith('w0'))delete newDone[k]}
+    save(id,{done:newDone});
+  }
+
+  // 3-day inactivity auto-reset
+  try {
+    const lastOpened=ls.get('mdn_last_opened')||ls.get('mdn_last_active')||'';
+    const plan=doc('team/plan')||{};
+    let shouldReset=false;
+    if(lastOpened){
+      const diff=diffDays(today,lastOpened);
+      if(diff>=3)shouldReset=true;
+    }else if(plan.start&&diffDays(today,plan.start)>=3){
+      const curM=doc(id)||{};
+      const curStreak=streakOf(curM.days||{});
+      if(curStreak===0)shouldReset=true;
+    }
+    if(shouldReset){
+      save('team/plan',{...plan,start:today,autoResetAt:now});
+      const curM=doc(id)||{};
+      const newDone={...(curM.done||{})};
+      for(const k in newDone){if(k.startsWith('w0'))delete newDone[k]}
+      save(id,{done:newDone});
+      setTimeout(()=>toast('Tidak ada aktivitas selama 3 hari. Rencana belajar di-reset ke Day 1.'),1000);
+    }
+    ls.set('mdn_last_opened',today);
+    ls.set('mdn_last_active',today);
+  }catch(e){console.warn('touchMe reset error',e)}
 }
 
 /* ===== shared helpers built on the store ===== */
@@ -1592,6 +1630,21 @@ const planStart=()=>{const p=doc('team/plan');return p&&p.start?p.start:dkey()};
 function planPos(k=dkey()){const n=diffDays(k,planStart());return n<0?{w:-1,d:0,n}:{w:Math.floor(n/7),d:n%7,n}}
 const tasksOn=k=>{const p=planPos(k);return p.w<0||p.w>=PLAN_FOCUS.length*3?[]:dayTasks(p.w%PLAN_FOCUS.length,p.d).map(x=>({...x,id:'w'+p.w+x.id.slice(x.id.indexOf('d'))}))};
 
+function activeStudyDay(){
+  const p=planPos();
+  if(p.w<0)return {w:0,d:0,dayNum:1,isSequential:false,tasks:dayTasks(0,0).map(x=>({...x,id:'w0'+x.id.slice(x.id.indexOf('d'))}))};
+  const curW=p.w%PLAN_FOCUS.length;
+  for(let d=0;d<7;d++){
+    const ts=dayTasks(curW,d).map(x=>({...x,id:'w'+p.w+x.id.slice(x.id.indexOf('d'))}));
+    if(ts.length&&ts.some(t=>!isDone(t.id))){
+      return {w:p.w,d:d,dayNum:p.w*7+d+1,isSequential:d<p.d,tasks:ts};
+    }
+  }
+  const d=Math.min(6,Math.max(0,p.d));
+  const ts=dayTasks(curW,d).map(x=>({...x,id:'w'+p.w+x.id.slice(x.id.indexOf('d'))}));
+  return {w:p.w,d:d,dayNum:p.w*7+d+1,isSequential:false,tasks:ts};
+}
+
 
 const RUB={
 W:[['TA','Task response',{5:'Covers the task but ideas are thin or only partly developed.',6:'Answers all parts, though some ideas lack detail or support.',7:'Clear position throughout, ideas well developed with relevant support.',8:'Fully answers every part, ideas are extended and convincing.'}],
@@ -1686,10 +1739,25 @@ function App(){
 /* ----- plan tasks ----- */
 const isDone=id=>!!(me().done&&me().done[id]);
 function markDone(id,on=true){save('members/'+S.uid,{done:{[id]:on?Date.now():0}})}
-function autoMark(fn){const t=tasksOn(dkey()).find(x=>!isDone(x.id)&&fn(x.act));if(t){markDone(t.id);dayCheck();return t}return null}
-function dayCheck(){const ts=tasksOn(dkey());if(ts.length&&ts.every(t=>isDone(t.id)||t.id===undefined))logEvent('plan','finished all of today’s plan');}
+function autoMark(fn){
+  const activeTs=(typeof activeStudyDay==='function'?activeStudyDay().tasks:tasksOn(dkey()));
+  const t=activeTs.concat(tasksOn(dkey())).find(x=>!isDone(x.id)&&fn(x.act));
+  if(t){markDone(t.id);dayCheck();return t}
+  return null;
+}
+function dayCheck(){
+  const activeTs=(typeof activeStudyDay==='function'?activeStudyDay().tasks:tasksOn(dkey()));
+  if(activeTs.length&&activeTs.every(t=>isDone(t.id)||t.id===undefined)){
+    logEvent('plan','finished all of today’s plan');
+    toast('Semua materi hari ini selesai!');
+  }
+}
 A.tick=d=>{const on=!isDone(d.id);markDone(d.id,on);addMinutes(on?+d.mins:-(+d.mins));if(on)dayCheck()};
-A.launch=d=>{const t=tasksOn(dkey()).concat(S.v.planTasks||[]).find(x=>x.id===d.id);if(t)launchAct(t.act,t.id)};
+A.launch=d=>{
+  const activeTs=(typeof activeStudyDay==='function'?activeStudyDay().tasks:[]);
+  const t=activeTs.concat(tasksOn(dkey())).concat(S.v.planTasks||[]).find(x=>x.id===d.id);
+  if(t)launchAct(t.act,t.id);
+};
 function launchAct(a,from){
   if(a.go==='test')return startRun({bk:a.bk,t:a.t,m:a.m,parts:a.parts,from});
   if(a.go==='vocab')return startVocab({from});
@@ -1701,28 +1769,215 @@ function launchAct(a,from){
 A.open=d=>{const v=d.v;if(v==='L'||v==='R')push('picker',{m:v});else if(v==='V')push('vocab');else if(v==='G')push('gramlist');else if(v==='W')push('wrhub');else if(v==='S')push('sphub');else if(v==='X')push('review');else if(v==='K')push('strat')};
 
 /* ----- home ----- */
+/* ----- daily speak recorder state & helpers ----- */
+let _dailyRecMedia=null;
+let _dailyRecStream=null;
+let _dailyRecChunks=[];
+let _dailyRecBlobUrl=null;
+let _dailyRecState='idle';
+let _dailyRecTimer=0;
+let _dailyRecElapsed=0;
+let _dailyRecLoadedDate='';
+
+async function startDailyVoiceRecord(){
+  try{
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+      toast('Browser tidak mendukung rekaman suara');
+      return;
+    }
+    _dailyRecStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    _dailyRecChunks=[];
+    let mime='';
+    if(typeof MediaRecorder!=='undefined'){
+      if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))mime='audio/webm;codecs=opus';
+      else if(MediaRecorder.isTypeSupported('audio/mp4'))mime='audio/mp4';
+      else if(MediaRecorder.isTypeSupported('audio/webm'))mime='audio/webm';
+    }
+    _dailyRecMedia=mime?new MediaRecorder(_dailyRecStream,{mimeType:mime}):new MediaRecorder(_dailyRecStream);
+    _dailyRecMedia.ondataavailable=e=>{
+      if(e.data&&e.data.size>0)_dailyRecChunks.push(e.data);
+    };
+    _dailyRecMedia.onstop=async ()=>{
+      const type=(_dailyRecMedia&&_dailyRecMedia.mimeType)||'audio/webm';
+      const blob=new Blob(_dailyRecChunks,{type});
+      if(_dailyRecBlobUrl)URL.revokeObjectURL(_dailyRecBlobUrl);
+      _dailyRecBlobUrl=URL.createObjectURL(blob);
+      _dailyRecState='stopped';
+      if(_dailyRecStream){
+        _dailyRecStream.getTracks().forEach(t=>t.stop());
+        _dailyRecStream=null;
+      }
+      clearInterval(_dailyRecTimer);
+      try{
+        if(window.IDB&&IDB.put){
+          await IDB.put('speak_'+dkey(),blob,{date:dkey(),dur:_dailyRecElapsed});
+        }
+      }catch(err){console.warn('IDB put speak error',err)}
+      render();
+    };
+    _dailyRecMedia.start(250);
+    _dailyRecState='recording';
+    _dailyRecElapsed=0;
+    clearInterval(_dailyRecTimer);
+    _dailyRecTimer=setInterval(()=>{
+      _dailyRecElapsed++;
+      const clock=document.getElementById('daily-rec-clock');
+      const bar=document.getElementById('daily-rec-bar');
+      if(clock)clock.textContent=fmtT(_dailyRecElapsed)+' / 00:30';
+      if(bar){
+        const pct=Math.min(100,Math.round((_dailyRecElapsed/30)*100));
+        bar.style.width=pct+'%';
+      }
+      if(_dailyRecElapsed>=60)stopDailyVoiceRecord();
+    },1000);
+    render();
+  }catch(err){
+    console.error('Daily record error:',err);
+    toast('Izin mikrofon diperlukan untuk merekam suara');
+  }
+}
+
+function stopDailyVoiceRecord(){
+  if(_dailyRecMedia&&_dailyRecMedia.state==='recording'){
+    try{_dailyRecMedia.stop()}catch(e){}
+  }
+}
+
+function resetDailyVoiceRecord(){
+  if(_dailyRecStream){
+    _dailyRecStream.getTracks().forEach(t=>t.stop());
+    _dailyRecStream=null;
+  }
+  if(_dailyRecMedia&&_dailyRecMedia.state==='recording'){
+    try{_dailyRecMedia.stop()}catch(e){}
+  }
+  if(_dailyRecBlobUrl){
+    URL.revokeObjectURL(_dailyRecBlobUrl);
+    _dailyRecBlobUrl=null;
+  }
+  _dailyRecState='idle';
+  _dailyRecElapsed=0;
+  clearInterval(_dailyRecTimer);
+  render();
+}
+
+async function loadDailyVoiceIfAny(){
+  const today=dkey();
+  if(_dailyRecLoadedDate===today)return;
+  _dailyRecLoadedDate=today;
+  try{
+    if(window.IDB&&IDB.get){
+      const blob=await IDB.get('speak_'+today);
+      if(blob&&!_dailyRecBlobUrl){
+        _dailyRecBlobUrl=URL.createObjectURL(blob);
+        render();
+      }
+    }
+  }catch(e){}
+}
+
+function speakTodayHtml(topic,dq,dd){
+  let widget='';
+  if(_dailyRecState==='recording'){
+    widget='<div class="card col g10" style="padding:14px 16px;border-radius:14px;background:color-mix(in srgb,var(--gold) 8%,var(--surf2));border:1px solid color-mix(in srgb,var(--gold) 45%,var(--line));margin-top:8px">'+
+      '<div class="row between">'+
+        '<div class="row g8">'+
+          '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#e74c3c;animation:pulse 1.2s infinite"></span>'+
+          '<span class="xs b" style="color:var(--text)">Sedang Merekam...</span>'+
+        '</div>'+
+        '<span id="daily-rec-clock" class="mono b" style="font-size:14px;color:var(--gold)">'+fmtT(_dailyRecElapsed)+' / 00:30</span>'+
+      '</div>'+
+      '<div class="bar" style="height:6px;background:var(--surf3)"><i id="daily-rec-bar" style="width:'+Math.min(100,Math.round((_dailyRecElapsed/30)*100))+'%;background:var(--gold);transition:width 0.3s"></i></div>'+
+      '<div class="row between" style="margin-top:4px">'+
+        '<span class="xs dim">Bicara dengan jelas dan tenang</span>'+
+        '<button class="btn sm" data-a="dailyRecStop" style="background:var(--gold);color:#111;font-weight:700;border:none">'+ic('pause',15)+' Selesai Rekam</button>'+
+      '</div>'+
+    '</div>';
+  }else if(_dailyRecState==='stopped'&&_dailyRecBlobUrl){
+    widget='<div class="card soft col g10" style="padding:12px 14px;border-radius:14px;background:var(--surf2);margin-top:8px">'+
+      '<div class="row between">'+
+        '<div class="row g8"><span class="pill ok sm">Terekam ('+fmtT(_dailyRecElapsed)+')</span><span class="xs dim">Dengarkan rekaman jawabanmu</span></div>'+
+        '<button class="btn xs ghost" data-a="dailyRecReset">Rekam Ulang</button>'+
+      '</div>'+
+      '<audio controls src="'+_dailyRecBlobUrl+'" style="width:100%;height:38px;border-radius:8px"></audio>'+
+      '<div class="row between" style="margin-top:2px">'+
+        '<span class="xs dim">Simpan untuk mencatat latihan harian</span>'+
+        '<button class="btn sm pri" data-a="dailySave" style="font-weight:600">'+ic('check',15)+' Simpan & Selesai</button>'+
+      '</div>'+
+    '</div>';
+  }else if(dd){
+    widget='<div class="card soft col g10" style="padding:12px 14px;border-radius:14px;background:var(--surf2);margin-top:8px">'+
+      '<div class="row between">'+
+        '<div class="row g8"><span class="pill ok sm">Selesai Hari Ini</span><span class="xs dim">1 menit latihan tercatat</span></div>'+
+        '<button class="btn xs ghost" data-a="dailyRecReset">Latihan Lagi</button>'+
+      '</div>'+
+      (_dailyRecBlobUrl?'<audio controls src="'+_dailyRecBlobUrl+'" style="width:100%;height:38px;margin-top:4px"></audio>':'')+
+    '</div>';
+  }else{
+    widget='<div class="card soft row between g12" style="padding:12px 14px;border-radius:14px;background:var(--surf2);margin-top:8px">'+
+      '<div class="row g10">'+
+        '<div style="width:36px;height:36px;border-radius:50%;background:color-mix(in srgb,var(--gold) 15%,transparent);display:grid;place-items:center;color:var(--gold);flex:none">'+ic('mic',18)+'</div>'+
+        '<div><div class="t3" style="font-size:14px">Rekam Suara</div><div class="xs dim">Gunakan mic HP untuk rekam 30 detik</div></div>'+
+      '</div>'+
+      '<div class="row g8">'+
+        '<button class="btn sm ghost" data-a="dailyDone" style="font-size:12px">Lewati</button>'+
+        '<button class="btn sm pri" data-a="dailyRecStart" style="font-size:13px;font-weight:600">'+ic('mic',15)+' Mulai Rekam</button>'+
+      '</div>'+
+    '</div>';
+  }
+
+  return sec('Speak today')+
+    '<div class="card col g8" style="padding:16px 18px">'+
+      '<div class="row between"><span class="eyebrow" style="color:var(--gold)">'+esc(topic.t)+'</span>'+(dd?pill('Selesai','ok sm'):pill('Target 30 Detik','sm'))+'</div>'+
+      '<div class="t2" style="margin:4px 0 2px;font-size:20px;line-height:1.35">'+esc(dq)+'</div>'+
+      '<div class="xs mut">Jawab langsung bersuara untuk melatih kelancaran dan kecepatan berpikir.</div>'+
+      widget+
+    '</div>';
+}
+
+A.dailyRecStart=()=>{startDailyVoiceRecord()};
+A.dailyRecStop=()=>{stopDailyVoiceRecord()};
+A.dailyRecReset=()=>{resetDailyVoiceRecord()};
+A.dailySave=()=>{
+  save('members/'+S.uid,{daily:{[dkey()]:1}});
+  addMinutes(1);
+  toast('Jawaban speaking tersimpan. Pertahankan streak!');
+  render();
+};
+A.dailyDone=()=>{
+  save('members/'+S.uid,{daily:{[dkey()]:1}});
+  addMinutes(1);
+  toast('Jawaban speaking dicatat.');
+  render();
+};
+
+/* ----- home ----- */
 SCR.home=()=>{
-  const k=dkey(),m=me(),tasks=tasksOn(k),pos=planPos(k),done=tasks.filter(t=>isDone(t.id)).length,next=tasks.find(t=>!isDone(t.id));
+  const k=dkey(),m=me(),curDay=activeStudyDay(),tasks=curDay.tasks,pos=planPos(k);
+  const done=tasks.filter(t=>isDone(t.id)).length,next=tasks.find(t=>!isDone(t.id));
   const st=streakOf(m.days),today=Math.round((m.days||{})[k]||0),plan=doc('team/plan')||{},hr=new Date().getHours();
   const g=hr<11?'Good morning':hr<17?'Good afternoon':'Good evening',date=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
   const left=plan.exam?diffDays(plan.exam,k):null;
   const rnd=seeded('sp'+k),topic=SP1[Math.floor(rnd()*SP1.length)],dq=topic.q[Math.floor(rnd()*topic.q.length)],dd=(m.daily||{})[k];
   const ms=members();
   const pwaBanner=(_deferredPrompt?'<div class="pwa-banner row between"><div><div class="t3" style="font-size:13.5px">Install Aplikasi ke HP</div><div class="xs dim">Akses instan dari layar utama tanpa buka browser</div></div><button class="btn sm pri" data-a="installApp">'+ic('download',14)+' Install</button></div>':'');
-  const hero=tasks.length?'<div class="card hero"><div class="row g16">'+ring(pct(done,tasks.length),78,8,done+'/'+tasks.length)+'<div class="grow"><div class="eyebrow">Day '+(pos.n+1)+' · Week '+(pos.w+1)+'</div><div class="t2" style="margin:5px 0 12px">'+(next?esc(next.t):'Everything done today')+'</div>'+(next?'<button class="btn pri sm" data-a="launch" data-id="'+next.id+'">Start '+ic('right',16)+'</button>':'<span class="pill ok">Nice work</span>')+'</div></div></div>'
+  
+  const heroTitle=next?esc(next.t):'Semua materi hari ini selesai';
+  const heroBadge='Day '+curDay.dayNum+' · Week '+(curDay.w+1)+(curDay.isSequential?' · Lanjutkan':'');
+  const hero=tasks.length?'<div class="card hero"><div class="row g16">'+ring(pct(done,tasks.length),78,8,done+'/'+tasks.length)+'<div class="grow"><div class="eyebrow">'+heroBadge+'</div><div class="t2" style="margin:5px 0 12px">'+heroTitle+'</div>'+(next?'<button class="btn pri sm" data-a="launch" data-id="'+next.id+'">Start '+ic('right',16)+'</button>':'<span class="pill ok">Bagus! Lanjut esok</span>')+'</div></div></div>'
     :'<div class="card hero"><div class="eyebrow">Plan</div><div class="t2" style="margin:6px 0 10px">'+(pos.n<0?'Your plan starts on '+planStart():'No tasks today')+'</div><button class="btn sm" data-a="nav" data-v="plan">Open plan</button></div>';
+    
   return '<div class="view col g16"><header><div class="eyebrow">'+date+'</div><h1 class="t1" style="margin-top:6px">'+g+',<br><em>'+esc(first(mname(S.uid)))+'</em></h1></header>'+pwaBanner+hero+
   '<div class="grid3"><div class="card soft tc" style="padding:14px 8px"><div class="num" style="font-size:30px;color:var(--gold)">'+st+'</div><div class="eyebrow">Day streak</div></div><div class="card soft tc" style="padding:14px 8px"><div class="num" style="font-size:30px">'+today+'</div><div class="eyebrow">Min today</div></div><div class="card soft tc" style="padding:14px 8px"><div class="num" style="font-size:30px">'+(left!==null&&left>=0?left:weekMinutes(m.days))+'</div><div class="eyebrow">'+(left!==null&&left>=0?'Days to exam':'Min this week')+'</div></div></div>'+
   (tasks.length?sec('Today’s plan','<button class="chip" data-a="nav" data-v="plan">Full plan</button>')+'<div class="card" style="padding:4px 16px"><div class="list">'+tasks.map(taskRow).join('')+'</div></div>':'')+
   sec('Study room')+'<div class="card">'+(ms.length?'<div class="col g16">'+ms.map(x=>'<div class="row g12">'+avatar(x.id)+'<div class="grow"><div class="t3">'+esc(mname(x.id))+(x.id===S.uid?' <span class="dim sm">you</span>':'')+'</div><div class="xs mut">'+Math.round((x.days||{})[k]||0)+' min today · '+streakOf(x.days)+' day streak</div></div>'+(((x.days||{})[k]||0)>0?pill('active','ok'):pill('not yet'))+'</div>').join('')+'</div>':emptyBox('No one has joined yet.'))+(ms.length<3?'<button class="btn ghost sm block mt16" data-a="invite">'+ic('plus',16)+' Invite member '+(ms.length+1)+'</button>':'')+'</div>'+
-  sec('Speak today')+'<div class="card"><div class="eyebrow">'+esc(topic.t)+'</div><div class="t2" style="margin:6px 0 12px;font-size:22px">'+esc(dq)+'</div><div class="row between"><span class="xs mut">Answer out loud for 30 seconds.</span>'+(dd?pill('done','ok'):'<button class="btn sm" data-a="dailyDone">'+ic('check',16)+' Done</button>')+'</div></div>'+
+  speakTodayHtml(topic,dq,dd)+
   sec('Practise')+'<div class="grid2">'+['L','R','V','G','W','S'].map(x=>'<button class="card tap tc" style="padding:16px 10px" data-a="open" data-v="'+x+'">'+modIcon(x,22).replace('class="ico"','class="ico" style="margin:0 auto 8px"')+'<div class="t3">'+MOD[x].n+'</div></button>').join('')+'</div></div>';
 };
 function taskRow(t,showOthers){
   const dn=isDone(t.id),others=members().filter(x=>x.id!==S.uid&&x.done&&x.done[t.id]);
   return '<div class="li '+(dn?'done':'')+'">'+modIcon(t.m)+'<div class="grow" data-a="launch" data-id="'+t.id+'"><div class="tt t3" style="font-size:14px">'+esc(t.t)+'</div><div class="xs dim">'+t.mins+' min · '+MOD[t.m].n+'</div></div>'+(others.length?'<div class="row" style="gap:0">'+others.map(o=>avatar(o.id,'sm')).join('')+'</div>':'')+'<button class="chk '+(dn?'on':'')+'" data-a="tick" data-id="'+t.id+'" data-mins="'+t.mins+'" aria-label="'+(dn?'Mark not done':'Mark done')+'">'+ic('check',16,2.4)+'</button></div>';
 }
-A.dailyDone=()=>{save('members/'+S.uid,{daily:{[dkey()]:1}});addMinutes(1);toast('Logged. Keep talking tomorrow.')};
 A.invite=()=>{
   const ms=members();
   const pwaBanner=(_deferredPrompt?'<div class="pwa-banner row between"><div><div class="t3" style="font-size:13.5px">Install Aplikasi ke HP</div><div class="xs dim">Akses instan dari layar utama tanpa buka browser</div></div><button class="btn sm pri" data-a="installApp">'+ic('download',14)+' Install</button></div>':'');
@@ -1798,13 +2053,26 @@ SCR.plan=()=>{
     const dn=new Date(k+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
     return '<div class="card" style="padding:14px 16px '+(ts.length?'6px':'14px')+(isT?';border-color:color-mix(in srgb,var(--gold) 50%,var(--line))':'')+'"><div class="row between"><div class="t3">Day '+(cur*7+d+1)+' <span class="dim" style="font-weight:500">· '+dn+'</span></div>'+(isT?pill('today','gold'):'')+'</div>'+(ts.length?'<div class="list" style="margin-top:6px">'+ts.map(taskRow).join('')+'</div>':'<div class="xs dim" style="padding-top:6px">Rest.</div>')+'</div>';
   }).join('');
-  return '<div class="view col g16"><header class="row between"><div><div class="eyebrow">Study plan</div><h1 class="t1" style="margin-top:6px">Week <em>'+(cur+1)+'</em></h1></div><button class="btn ico ghost" data-a="planSet" aria-label="Plan settings">'+ic('sliders')+'</button></header>'+
+  return '<div class="view col g16"><header class="row between"><div><div class="eyebrow">Study plan</div><h1 class="t1" style="margin-top:6px">Week <em>'+(cur+1)+'</em></h1></div><div class="row g8"><button class="btn xs ghost" data-a="resetPlanToDay1" style="font-size:12px;padding:6px 10px">Reset ke Day 1</button><button class="btn ico ghost" data-a="planSet" aria-label="Plan settings">'+ic('sliders')+'</button></div></header>'+
   chips(Array.from({length:total},(_,i)=>[i,'W'+(i+1)]),'pw',cur)+
   '<div class="card hero"><div class="eyebrow">Focus this week</div><div class="t2" style="margin:5px 0 12px">'+BOOKS[bk].n+', Test '+t+'</div><div class="col g8">'+ms.map(x=>{const dn=wkTasks.filter(q=>x.done&&x.done[q.id]).length;return '<div class="row g12">'+avatar(x.id,'sm')+'<div class="grow">'+bar(pct(dn,wkTasks.length))+'</div><span class="xs mono mut">'+dn+'/'+wkTasks.length+'</span></div>'}).join('')+'</div></div>'+
   days+'<p class="xs dim tc">Plan starts '+planStart()+(plan.exam?' · Exam '+plan.exam:'')+'. Target band '+(plan.target||7)+'.</p></div>';
 };
 A.pw=d=>{S.v.pw=+d.v;render()};
-A.planSet=()=>{const p=doc('team/plan')||{};sheet('<div class="t2">Plan settings</div><div class="col g16 mt16"><div class="field"><label class="lbl" for="ps-start">Plan start date</label><input class="inp" id="ps-start" type="date" value="'+esc(p.start||planStart())+'"></div><div class="field"><label class="lbl" for="ps-exam">Exam date (optional)</label><input class="inp" id="ps-exam" type="date" value="'+esc(p.exam||'')+'"></div><div class="field"><label class="lbl" for="ps-tgt">Target band</label><select class="sel" id="ps-tgt">'+[5,5.5,6,6.5,7,7.5,8,8.5,9].map(b=>'<option value="'+b+'"'+((p.target||7)==b?' selected':'')+'>'+b.toFixed(1)+'</option>').join('')+'</select></div><button class="btn pri block" data-a="planSave">Save for everyone</button></div>')};
+A.resetPlanToDay1=()=>{
+  const today=dkey(),now=Date.now(),plan=doc('team/plan')||{},id='members/'+S.uid,member=doc(id)||{};
+  save('team/plan',{...plan,start:today,manualResetAt:now});
+  const newDone={...(member.done||{})};
+  for(const k in newDone){if(k.startsWith('w0'))delete newDone[k]}
+  save(id,{done:newDone});
+  ls.set('mdn_last_opened',today);
+  ls.set('mdn_last_active',today);
+  S.sheet=null;
+  S.v.pw=0;
+  toast('Rencana belajar di-reset kembali ke Day 1.');
+  render();
+};
+A.planSet=()=>{const p=doc('team/plan')||{};sheet('<div class="t2">Plan settings</div><div class="col g16 mt16"><div class="field"><label class="lbl" for="ps-start">Plan start date</label><input class="inp" id="ps-start" type="date" value="'+esc(p.start||planStart())+'"></div><div class="field"><label class="lbl" for="ps-exam">Exam date (optional)</label><input class="inp" id="ps-exam" type="date" value="'+esc(p.exam||'')+'"></div><div class="field"><label class="lbl" for="ps-tgt">Target band</label><select class="sel" id="ps-tgt">'+[5,5.5,6,6.5,7,7.5,8,8.5,9].map(b=>'<option value="'+b+'"'+((p.target||7)==b?' selected':'')+'>'+b.toFixed(1)+'</option>').join('')+'</select></div><div class="card soft col g8 mt4"><div class="xs dim">Mulai ulang program dari awal jika tertinggal materi:</div><button class="btn sm ghost" data-a="resetPlanToDay1">Reset Rencana ke Day 1</button></div><button class="btn pri block mt8" data-a="planSave">Save for everyone</button></div>')};
 A.planSave=()=>{const s=$('#ps-start').value,e=$('#ps-exam').value,t=+$('#ps-tgt').value;save('team/plan',{start:s||dkey(),exam:e||'',target:t});S.v.pw=undefined;S.sheet=null;toast('Plan updated for the group');render()};
 
 /* ----- learn hub ----- */
@@ -3268,6 +3536,7 @@ async function boot(){
   render();
   try{await initBackend()}catch(e){console.error('backend',e);S.uid=S.uid||'local';S.ready=true;render()}
   liveInit();
+  loadDailyVoiceIfAny();
 }
 boot();
 
