@@ -525,8 +525,9 @@
 .transcript-drawer-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.68);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 200;
   display: flex;
   justify-content: center;
@@ -534,52 +535,63 @@
   animation: drawerFadeIn 0.2s ease;
 }
 .transcript-drawer-content {
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--surf) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--line2) !important;
   border-bottom: none;
-  border-radius: 18px 18px 0 0;
+  border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 680px;
-  height: 82vh;
+  height: 84vh;
   max-height: 88vh;
   display: flex;
   flex-direction: column;
   animation: drawerSlideUp 0.25s cubic-bezier(0.16,1,0.3,1);
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
 }
 .transcript-drawer-header {
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line2);
+  background: var(--surf2);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex: none;
 }
 .transcript-drawer-body {
-  padding: 16px 18px 36px;
+  padding: 20px 20px 48px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  font-size: 14.5px;
-  line-height: 1.7;
+  font-size: 15px;
+  line-height: 1.75;
+  background: var(--surf);
+  color: var(--fg);
 }
 .dialogue-turn {
-  margin-bottom: 12px;
+  margin-bottom: 18px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 .dialogue-speaker {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   color: var(--gold);
   text-transform: uppercase;
 }
 .dialogue-speech {
   margin: 0;
-  color: var(--text);
+  color: var(--fg) !important;
+  font-size: 15px;
+  line-height: 1.75;
 }
 .dialogue-speech.solo {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  color: var(--fg) !important;
+  font-size: 15px;
+  line-height: 1.75;
 }
 @keyframes drawerSlideUp {
   from { transform: translateY(100%); }
@@ -630,6 +642,7 @@
   --gold:#d8b476;--gold2:#f1dba7;--on-gold:#1a1407;
   --ok:#71d0a2;--warn:#ebbb5e;--bad:#ee7d70;--info:#7fc6ea;
   --m1:#d8b476;--m2:#6cc4d6;--m3:#d890bb;
+  --card:var(--surf);--border:var(--line2);--text:var(--fg);
   --shadow:0 12px 32px rgba(0,0,0,.38);
   --serif:'Instrument Serif','Iowan Old Style',Georgia,serif;
   --sans:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
@@ -640,6 +653,7 @@
   --bg:#eceeea;--bg2:#e4e8e3;--surf:#fbfbf8;--surf2:#f1f3ee;--surf3:#e5e9e2;
   --line:rgba(18,32,30,.10);--line2:rgba(18,32,30,.19);
   --fg:#13211f;--fg2:#44544f;--fg3:#78867f;
+  --card:var(--surf);--border:var(--line2);--text:var(--fg);
   --gold:#94702b;--gold2:#b98b3b;--on-gold:#fffaf0;
   --ok:#1b8358;--warn:#a5670b;--bad:#bc392b;--info:#1b6c91;
   --m1:#94702b;--m2:#14778b;--m3:#a24a7a;--shadow:0 10px 28px rgba(20,35,30,.10);color-scheme:light}}
@@ -2315,7 +2329,7 @@ function transcriptDrawerHtml(r) {
     '<div class="transcript-drawer-content" onclick="event.stopPropagation()">' +
       '<div class="transcript-drawer-header row between">' +
         '<div><div class="t3">Transcript Audio - Part ' + r.ap + '</div><div class="xs dim">' + bTitle + ' Test ' + r.t + ' Part ' + r.ap + '</div></div>' +
-        '<button class="btn ico sm ghost" data-a="closeTranscript" title="Tutup Naskah">X</button>' +
+        '<button class="btn ico sm ghost" data-a="closeTranscript" title="Tutup Naskah">' + ic('x', 18) + '</button>' +
       '</div>' +
       '<div class="transcript-drawer-body">' +
         formatAudioscript(audData) +
